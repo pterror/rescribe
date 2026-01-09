@@ -2,32 +2,33 @@
   description = "rescribe - Universal document conversion library";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
-  outputs = { self, nixpkgs, flake-utils, rust-overlay }:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        overlays = [ (import rust-overlay) ];
-        pkgs = import nixpkgs { inherit system overlays; };
-        rust = pkgs.rust-bin.stable.latest.default.override {
-          extensions = [ "rust-src" "rust-analyzer" ];
-        };
-      in {
-        devShells.default = pkgs.mkShell {
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        devShells.default = pkgs.mkShell rec {
           buildInputs = with pkgs; [
-            rust
-            cargo-watch
-            cargo-nextest
-            nodejs_22
-            nodePackages.pnpm
+            stdenv.cc.cc
+            # Rust toolchain
+            rustc
+            cargo
+            rust-analyzer
+            clippy
+            rustfmt
+            # Fast linker for incremental builds
+            mold
+            clang
+            # JS tooling for docs
+            bun
           ];
-
-          shellHook = ''
-            git config core.hooksPath .githooks
-          '';
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath buildInputs}:$LD_LIBRARY_PATH";
         };
-      });
+      }
+    );
 }
