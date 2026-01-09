@@ -1,0 +1,10 @@
+[package]
+name = "rescribe-math"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Math node kinds for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true

@@ -62,39 +62,25 @@ impl Properties {
         self.0.contains_key(key)
     }
 
+    /// Remove a property and return its value.
+    pub fn remove(&mut self, key: &str) -> Option<PropValue> {
+        self.0.remove(key)
+    }
+
     /// Iterate over properties.
     pub fn iter(&self) -> impl Iterator<Item = (&String, &PropValue)> {
         self.0.iter()
     }
-}
 
-// Standard property keys
-pub mod prop {
-    // Semantic properties (format-agnostic)
-    pub const LEVEL: &str = "level";
-    pub const ORDERED: &str = "ordered";
-    pub const LANGUAGE: &str = "language";
-    pub const URL: &str = "url";
-    pub const TITLE: &str = "title";
-    pub const ALT: &str = "alt";
-    pub const CONTENT: &str = "content";
-    pub const RESOURCE_ID: &str = "resource";
+    /// Check if the property set is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 
-    // Style properties (presentational)
-    pub const STYLE_FONT: &str = "style:font";
-    pub const STYLE_SIZE: &str = "style:size";
-    pub const STYLE_COLOR: &str = "style:color";
-    pub const STYLE_ALIGN: &str = "style:align";
-
-    // Layout properties (positioning)
-    pub const LAYOUT_PAGE_BREAK: &str = "layout:page_break";
-    pub const LAYOUT_COLUMN: &str = "layout:column";
-    pub const LAYOUT_FLOAT: &str = "layout:float";
-
-    // Format-specific prefixes
-    pub const HTML_PREFIX: &str = "html:";
-    pub const LATEX_PREFIX: &str = "latex:";
-    pub const DOCX_PREFIX: &str = "docx:";
+    /// Get the number of properties.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 }
 
 // Conversions

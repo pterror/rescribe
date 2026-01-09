@@ -16,6 +16,9 @@ pub struct Node {
 }
 
 /// Node kind - open enum for extensibility.
+///
+/// This is a newtype wrapper around String to allow any node kind.
+/// Standard node kinds are defined in `rescribe-std`.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct NodeKind(pub String);
 
@@ -35,11 +38,6 @@ impl Node {
             children: Vec::new(),
             span: None,
         }
-    }
-
-    /// Create a text node.
-    pub fn text(content: impl Into<String>) -> Self {
-        Self::new(NodeKind::TEXT).prop("content", content.into())
     }
 
     /// Add a property.
@@ -68,33 +66,15 @@ impl Node {
 }
 
 impl NodeKind {
-    // Standard block kinds
-    pub const DOCUMENT: &'static str = "document";
-    pub const PARAGRAPH: &'static str = "paragraph";
-    pub const HEADING: &'static str = "heading";
-    pub const CODE_BLOCK: &'static str = "code_block";
-    pub const BLOCKQUOTE: &'static str = "blockquote";
-    pub const LIST: &'static str = "list";
-    pub const LIST_ITEM: &'static str = "list_item";
-    pub const TABLE: &'static str = "table";
-    pub const TABLE_ROW: &'static str = "table_row";
-    pub const TABLE_CELL: &'static str = "table_cell";
-    pub const FIGURE: &'static str = "figure";
-    pub const HORIZONTAL_RULE: &'static str = "horizontal_rule";
+    /// Create a new node kind from a string.
+    pub fn new(s: impl Into<String>) -> Self {
+        NodeKind(s.into())
+    }
 
-    // Standard inline kinds
-    pub const TEXT: &'static str = "text";
-    pub const EMPHASIS: &'static str = "emphasis";
-    pub const STRONG: &'static str = "strong";
-    pub const CODE: &'static str = "code";
-    pub const LINK: &'static str = "link";
-    pub const IMAGE: &'static str = "image";
-    pub const LINE_BREAK: &'static str = "line_break";
-
-    // Format-specific kinds (examples)
-    pub const LATEX_MATH: &'static str = "latex:math";
-    pub const HTML_DIV: &'static str = "html:div";
-    pub const DOCX_COMMENT: &'static str = "docx:comment";
+    /// Get the kind as a string slice.
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
 }
 
 impl From<&str> for NodeKind {
@@ -106,6 +86,12 @@ impl From<&str> for NodeKind {
 impl From<String> for NodeKind {
     fn from(s: String) -> Self {
         NodeKind(s)
+    }
+}
+
+impl std::fmt::Display for NodeKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

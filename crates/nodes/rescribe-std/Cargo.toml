@@ -1,0 +1,10 @@
+[package]
+name = "rescribe-std"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Standard node kinds and property keys for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true

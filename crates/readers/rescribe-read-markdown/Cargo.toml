@@ -1,0 +1,12 @@
+[package]
+name = "rescribe-read-markdown"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Markdown reader for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+pulldown-cmark = "0.12"
