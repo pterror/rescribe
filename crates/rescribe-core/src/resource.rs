@@ -1,7 +1,7 @@
 //! Resource management for embedded content (images, fonts, etc.).
 
-use std::collections::HashMap;
 use crate::Properties;
+use std::collections::HashMap;
 
 /// Unique identifier for an embedded resource.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

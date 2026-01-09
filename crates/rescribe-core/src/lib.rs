@@ -4,15 +4,15 @@
 //! format-agnostic way, enabling lossless conversion between formats.
 
 mod document;
+mod fidelity;
 mod node;
 mod properties;
 mod resource;
-mod fidelity;
 mod traits;
 
 pub use document::*;
+pub use fidelity::*;
 pub use node::*;
 pub use properties::*;
 pub use resource::*;
-pub use fidelity::*;
 pub use traits::*;

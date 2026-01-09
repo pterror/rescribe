@@ -55,7 +55,11 @@ pub trait Parser: Send + Sync {
     fn formats(&self) -> &[&str];
 
     /// Parse bytes into a document.
-    fn parse(&self, input: &[u8], options: &ParseOptions) -> Result<ConversionResult<Document>, ParseError>;
+    fn parse(
+        &self,
+        input: &[u8],
+        options: &ParseOptions,
+    ) -> Result<ConversionResult<Document>, ParseError>;
 }
 
 /// Emit the document IR to a format.
@@ -64,7 +68,11 @@ pub trait Emitter: Send + Sync {
     fn formats(&self) -> &[&str];
 
     /// Emit a document to bytes.
-    fn emit(&self, doc: &Document, options: &EmitOptions) -> Result<ConversionResult<Vec<u8>>, EmitError>;
+    fn emit(
+        &self,
+        doc: &Document,
+        options: &EmitOptions,
+    ) -> Result<ConversionResult<Vec<u8>>, EmitError>;
 }
 
 /// Transform a document (same IR, modified content).
