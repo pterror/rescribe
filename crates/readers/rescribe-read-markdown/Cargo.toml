@@ -10,3 +10,6 @@ description = "Markdown reader for rescribe"
 rescribe-core.workspace = true
 rescribe-std.workspace = true
 pulldown-cmark = "0.12"
+
+[dev-dependencies]
+rescribe-write-markdown.workspace = true
