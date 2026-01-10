@@ -8,7 +8,7 @@
   - Auto-detect input format, explicit output format
   - `--list-formats` to show available readers/writers
 
-- [ ] **Metadata handling**
+- [x] **Metadata handling**
   - YAML frontmatter parsing in Markdown reader
   - HTML `<meta>` tag extraction in HTML reader
   - Populate `Document.metadata` field
