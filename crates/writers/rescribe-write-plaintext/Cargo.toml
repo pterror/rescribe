@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-plaintext"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Plain text writer for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true

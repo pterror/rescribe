@@ -1,17 +1,16 @@
 [package]
-name = "rescribe-read-markdown"
+name = "rescribe-read-html"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Markdown reader for rescribe"
+description = "HTML reader for rescribe"
 
 [dependencies]
 rescribe-core.workspace = true
 rescribe-std.workspace = true
-pulldown-cmark = "0.12"
+html5ever = "0.36"
+markup5ever_rcdom = "0.36"
 
 [dev-dependencies]
-rescribe-write-markdown.workspace = true
-rescribe-read-html.workspace = true
 rescribe-write-html.workspace = true
