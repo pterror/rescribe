@@ -10,6 +10,7 @@ description = "Markdown reader for rescribe"
 rescribe-core.workspace = true
 rescribe-std.workspace = true
 pulldown-cmark = "0.12"
+serde_yaml.workspace = true
 
 [dev-dependencies]
 rescribe-write-markdown.workspace = true

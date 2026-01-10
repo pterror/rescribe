@@ -2,7 +2,7 @@
 
 ## Priority 1: Usability
 
-- [ ] **CLI tool** (`rescribe-cli` crate)
+- [x] **CLI tool** (`rescribe-cli` crate)
   - `rescribe convert input.md -o output.html`
   - `rescribe convert input.md --to latex` (stdout)
   - Auto-detect input format, explicit output format

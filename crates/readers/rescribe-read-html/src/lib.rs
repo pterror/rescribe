@@ -6,7 +6,8 @@ use html5ever::tendril::TendrilSink;
 use html5ever::{Attribute, QualName, parse_document};
 use markup5ever_rcdom::{Handle, NodeData, RcDom};
 use rescribe_core::{
-    ConversionResult, Document, FidelityWarning, ParseError, ParseOptions, Severity, WarningKind,
+    ConversionResult, Document, FidelityWarning, ParseError, ParseOptions, Properties, Severity,
+    WarningKind,
 };
 use rescribe_std::{Node, node, prop};
 
@@ -21,6 +22,7 @@ pub fn parse_with_options(
     _options: &ParseOptions,
 ) -> Result<ConversionResult<Document>, ParseError> {
     let mut warnings = Vec::new();
+    let mut metadata = Properties::new();
 
     // Parse HTML using html5ever
     let dom = parse_document(RcDom::default(), Default::default())
@@ -28,13 +30,69 @@ pub fn parse_with_options(
         .read_from(&mut input.as_bytes())
         .map_err(|e| ParseError::Invalid(format!("HTML parse error: {:?}", e)))?;
 
+    // Extract metadata from <head>
+    extract_metadata(&dom.document, &mut metadata);
+
     // Convert DOM to rescribe nodes
     let children = convert_children(&dom.document, &mut warnings);
 
     let root = Node::new(node::DOCUMENT).children(children);
-    let doc = Document::new().with_content(root);
+    let doc = Document::new().with_content(root).with_metadata(metadata);
 
     Ok(ConversionResult::with_warnings(doc, warnings))
+}
+
+/// Extract metadata from HTML head element.
+fn extract_metadata(handle: &Handle, metadata: &mut Properties) {
+    // Recursively search for head element and extract metadata
+    if let NodeData::Element { name, attrs, .. } = &handle.data {
+        let tag = name.local.as_ref();
+
+        match tag {
+            "title" => {
+                // Extract title text content
+                let title = extract_element_text(handle);
+                if !title.is_empty() {
+                    metadata.set("title", title);
+                }
+            }
+            "meta" => {
+                let attrs = attrs.borrow();
+                // Handle <meta name="..." content="...">
+                if let Some(name) = get_attr(&attrs, "name")
+                    && let Some(content) = get_attr(&attrs, "content")
+                {
+                    metadata.set(&name, content);
+                }
+                // Handle <meta property="..." content="..."> (Open Graph)
+                if let Some(property) = get_attr(&attrs, "property")
+                    && let Some(content) = get_attr(&attrs, "content")
+                {
+                    // Normalize og: prefix
+                    let key = property.strip_prefix("og:").unwrap_or(&property);
+                    metadata.set(key, content);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    // Recurse into children
+    for child in handle.children.borrow().iter() {
+        extract_metadata(child, metadata);
+    }
+}
+
+/// Extract text content from an element.
+fn extract_element_text(handle: &Handle) -> String {
+    let mut text = String::new();
+    for child in handle.children.borrow().iter() {
+        if let NodeData::Text { contents } = &child.data {
+            text.push_str(&contents.borrow());
+        }
+        text.push_str(&extract_element_text(child));
+    }
+    text
 }
 
 /// Convert child nodes of a DOM node.
@@ -541,5 +599,43 @@ mod tests {
         assert_eq!(img.kind.as_str(), node::IMAGE);
         assert_eq!(img.props.get_str(prop::URL), Some("test.png"));
         assert_eq!(img.props.get_str(prop::ALT), Some("Test image"));
+    }
+
+    #[test]
+    fn test_parse_html_metadata() {
+        let input = r#"<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page Title</title>
+    <meta name="author" content="Jane Doe">
+    <meta name="description" content="A test page">
+    <meta name="keywords" content="test, html, metadata">
+    <meta property="og:image" content="https://example.com/image.png">
+</head>
+<body>
+    <h1>Hello</h1>
+    <p>Content here.</p>
+</body>
+</html>"#;
+        let result = parse(input).unwrap();
+        let doc = result.value;
+
+        // Check metadata was extracted
+        assert_eq!(doc.metadata.get_str("title"), Some("My Page Title"));
+        assert_eq!(doc.metadata.get_str("author"), Some("Jane Doe"));
+        assert_eq!(doc.metadata.get_str("description"), Some("A test page"));
+        assert_eq!(
+            doc.metadata.get_str("keywords"),
+            Some("test, html, metadata")
+        );
+        // Open Graph metadata (og: prefix stripped)
+        assert_eq!(
+            doc.metadata.get_str("image"),
+            Some("https://example.com/image.png")
+        );
+
+        // Content should still be parsed
+        let children = root_children(&doc);
+        assert!(!children.is_empty());
     }
 }

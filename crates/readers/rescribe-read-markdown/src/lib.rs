@@ -2,9 +2,12 @@
 //!
 //! Parses CommonMark (with extensions) into rescribe's document IR.
 
-use pulldown_cmark::{CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{
+    CodeBlockKind, Event, HeadingLevel, MetadataBlockKind, Options, Parser, Tag, TagEnd,
+};
 use rescribe_core::{
-    ConversionResult, Document, FidelityWarning, ParseError, ParseOptions, Severity, WarningKind,
+    ConversionResult, Document, FidelityWarning, ParseError, ParseOptions, Properties, Severity,
+    WarningKind,
 };
 use rescribe_std::{Node, node, prop};
 
@@ -19,6 +22,7 @@ pub fn parse_with_options(
     _options: &ParseOptions,
 ) -> Result<ConversionResult<Document>, ParseError> {
     let mut warnings = Vec::new();
+    let mut metadata = Properties::new();
 
     // Enable common extensions
     let mut opts = Options::empty();
@@ -26,25 +30,30 @@ pub fn parse_with_options(
     opts.insert(Options::ENABLE_FOOTNOTES);
     opts.insert(Options::ENABLE_STRIKETHROUGH);
     opts.insert(Options::ENABLE_TASKLISTS);
+    opts.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
 
     let parser = Parser::new_ext(input, opts);
     let events: Vec<_> = parser.collect();
 
-    let children = parse_events(&events, &mut warnings);
+    let children = parse_events(&events, &mut warnings, &mut metadata);
 
     // Wrap children in a document root node
     let root = Node::new(node::DOCUMENT).children(children);
-    let doc = Document::new().with_content(root);
+    let doc = Document::new().with_content(root).with_metadata(metadata);
     Ok(ConversionResult::with_warnings(doc, warnings))
 }
 
 /// Parse a slice of events into nodes.
-fn parse_events(events: &[Event<'_>], warnings: &mut Vec<FidelityWarning>) -> Vec<Node> {
+fn parse_events(
+    events: &[Event<'_>],
+    warnings: &mut Vec<FidelityWarning>,
+    metadata: &mut Properties,
+) -> Vec<Node> {
     let mut nodes = Vec::new();
     let mut idx = 0;
 
     while idx < events.len() {
-        let (node, consumed) = parse_event(&events[idx..], warnings);
+        let (node, consumed) = parse_event(&events[idx..], warnings, metadata);
         if let Some(n) = node {
             nodes.push(n);
         }
@@ -55,9 +64,13 @@ fn parse_events(events: &[Event<'_>], warnings: &mut Vec<FidelityWarning>) -> Ve
 }
 
 /// Parse a single event or matched tag pair, returning the node and events consumed.
-fn parse_event(events: &[Event<'_>], warnings: &mut Vec<FidelityWarning>) -> (Option<Node>, usize) {
+fn parse_event(
+    events: &[Event<'_>],
+    warnings: &mut Vec<FidelityWarning>,
+    metadata: &mut Properties,
+) -> (Option<Node>, usize) {
     match &events[0] {
-        Event::Start(tag) => parse_tag(tag.clone(), events, warnings),
+        Event::Start(tag) => parse_tag(tag.clone(), events, warnings, metadata),
         Event::Text(text) => (
             Some(Node::new(node::TEXT).prop(prop::CONTENT, text.to_string())),
             1,
@@ -117,11 +130,12 @@ fn parse_tag(
     tag: Tag<'_>,
     events: &[Event<'_>],
     warnings: &mut Vec<FidelityWarning>,
+    metadata: &mut Properties,
 ) -> (Option<Node>, usize) {
     // Find the matching end tag
     let end_idx = find_matching_end(&events[1..], &tag);
     let inner_events = &events[1..=end_idx];
-    let children = parse_events(inner_events, warnings);
+    let children = parse_events(inner_events, warnings, metadata);
     let consumed = end_idx + 2; // +1 for start, +1 for end
 
     let node = match tag {
@@ -271,12 +285,33 @@ fn parse_tag(
             )
         }
 
-        Tag::MetadataBlock(_) => {
-            warnings.push(FidelityWarning::new(
-                Severity::Minor,
-                WarningKind::UnsupportedNode("metadata_block".to_string()),
-                "Metadata blocks are not yet supported",
-            ));
+        Tag::MetadataBlock(kind) => {
+            // Extract YAML content from children (text nodes)
+            let content = children
+                .iter()
+                .filter_map(|n| {
+                    if n.kind.as_str() == node::TEXT {
+                        n.props.get_str(prop::CONTENT).map(|s| s.to_string())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join("");
+
+            match kind {
+                MetadataBlockKind::YamlStyle => {
+                    parse_yaml_metadata(&content, metadata, warnings);
+                }
+                MetadataBlockKind::PlusesStyle => {
+                    // TOML-style frontmatter, not yet supported
+                    warnings.push(FidelityWarning::new(
+                        Severity::Minor,
+                        WarningKind::UnsupportedNode("toml_frontmatter".to_string()),
+                        "TOML frontmatter is not yet supported",
+                    ));
+                }
+            }
             None
         }
 
@@ -342,6 +377,71 @@ fn tag_end_matches(end: &TagEnd, start: &Tag<'_>) -> bool {
                 Tag::DefinitionListDefinition
             )
     )
+}
+
+/// Parse YAML frontmatter and populate document metadata.
+fn parse_yaml_metadata(
+    content: &str,
+    metadata: &mut Properties,
+    warnings: &mut Vec<FidelityWarning>,
+) {
+    // Parse YAML as a mapping
+    let yaml: Result<serde_yaml::Value, _> = serde_yaml::from_str(content);
+
+    match yaml {
+        Ok(serde_yaml::Value::Mapping(map)) => {
+            for (key, value) in map {
+                if let serde_yaml::Value::String(key_str) = key {
+                    match value {
+                        serde_yaml::Value::String(s) => {
+                            metadata.set(&key_str, s);
+                        }
+                        serde_yaml::Value::Number(n) => {
+                            if let Some(i) = n.as_i64() {
+                                metadata.set(&key_str, i);
+                            } else if let Some(f) = n.as_f64() {
+                                // Store floats as strings for now
+                                metadata.set(&key_str, f.to_string());
+                            }
+                        }
+                        serde_yaml::Value::Bool(b) => {
+                            metadata.set(&key_str, b);
+                        }
+                        serde_yaml::Value::Sequence(seq) => {
+                            // Store arrays as comma-separated strings
+                            let items: Vec<String> = seq
+                                .into_iter()
+                                .filter_map(|v| match v {
+                                    serde_yaml::Value::String(s) => Some(s),
+                                    _ => None,
+                                })
+                                .collect();
+                            if !items.is_empty() {
+                                metadata.set(&key_str, items.join(", "));
+                            }
+                        }
+                        _ => {
+                            // Nested objects not supported yet
+                        }
+                    }
+                }
+            }
+        }
+        Ok(_) => {
+            warnings.push(FidelityWarning::new(
+                Severity::Minor,
+                WarningKind::FeatureLost("yaml_frontmatter".to_string()),
+                "YAML frontmatter must be a mapping/object",
+            ));
+        }
+        Err(e) => {
+            warnings.push(FidelityWarning::new(
+                Severity::Minor,
+                WarningKind::FeatureLost("yaml_frontmatter".to_string()),
+                format!("Failed to parse YAML frontmatter: {}", e),
+            ));
+        }
+    }
 }
 
 #[cfg(test)]
@@ -428,5 +528,36 @@ mod tests {
         let children = root_children(&doc);
         assert_eq!(children[0].kind.as_str(), node::LIST);
         assert_eq!(children[0].props.get_bool(prop::ORDERED), Some(true));
+    }
+
+    #[test]
+    fn test_parse_yaml_frontmatter() {
+        let input = r#"---
+title: My Document
+author: John Doe
+date: 2024-01-15
+draft: true
+tags:
+  - rust
+  - markdown
+---
+
+# Hello
+
+Content here."#;
+        let result = parse(input).unwrap();
+        let doc = result.value;
+
+        // Check metadata was extracted
+        assert_eq!(doc.metadata.get_str("title"), Some("My Document"));
+        assert_eq!(doc.metadata.get_str("author"), Some("John Doe"));
+        assert_eq!(doc.metadata.get_str("date"), Some("2024-01-15"));
+        assert_eq!(doc.metadata.get_bool("draft"), Some(true));
+        assert_eq!(doc.metadata.get_str("tags"), Some("rust, markdown"));
+
+        // Content should still be parsed
+        let children = root_children(&doc);
+        assert!(!children.is_empty());
+        assert_eq!(children[0].kind.as_str(), node::HEADING);
     }
 }
