@@ -5,6 +5,9 @@
 
 pub use rescribe_core::*;
 
+/// Type-safe document builder API.
+pub mod builder;
+
 /// Standard node kind constants.
 pub mod node {
     // Block-level nodes

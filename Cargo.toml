@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/rescribe",
     "crates/rescribe-core",
     "crates/nodes/*",
     "crates/readers/*",

@@ -1,0 +1,45 @@
+[package]
+name = "rescribe"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Universal document conversion library with fidelity tracking"
+keywords = ["document", "conversion", "pandoc", "markdown", "html"]
+categories = ["text-processing", "parser-implementations"]
+
+[features]
+default = ["std", "markdown", "html"]
+
+# Node definition crates
+std = ["dep:rescribe-std"]
+math = ["dep:rescribe-math"]
+
+# Format support
+markdown = ["dep:rescribe-read-markdown", "dep:rescribe-write-markdown"]
+html = ["dep:rescribe-read-html", "dep:rescribe-write-html"]
+latex = ["dep:rescribe-write-latex"]
+org = ["dep:rescribe-write-org"]
+plaintext = ["dep:rescribe-write-plaintext"]
+
+# All formats
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext"]
+
+[dependencies]
+# Core is always included
+rescribe-core = { workspace = true }
+
+# Node definitions (optional)
+rescribe-std = { workspace = true, optional = true }
+rescribe-math = { workspace = true, optional = true }
+
+# Readers (optional)
+rescribe-read-markdown = { workspace = true, optional = true }
+rescribe-read-html = { workspace = true, optional = true }
+
+# Writers (optional)
+rescribe-write-markdown = { workspace = true, optional = true }
+rescribe-write-html = { workspace = true, optional = true }
+rescribe-write-latex = { workspace = true, optional = true }
+rescribe-write-org = { workspace = true, optional = true }
+rescribe-write-plaintext = { workspace = true, optional = true }
