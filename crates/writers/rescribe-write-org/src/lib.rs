@@ -2,6 +2,8 @@
 //!
 //! Emits documents in Emacs Org-mode format.
 
+pub mod builder;
+
 use rescribe_core::{
     ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, Severity,
     WarningKind,

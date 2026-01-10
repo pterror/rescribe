@@ -2,6 +2,8 @@
 //!
 //! Emits documents as LaTeX source.
 
+pub mod builder;
+
 use rescribe_core::{
     ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, Severity,
     WarningKind,

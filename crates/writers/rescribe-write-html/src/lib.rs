@@ -2,6 +2,8 @@
 //!
 //! Emits rescribe's document IR as HTML5.
 
+pub mod builder;
+
 use rescribe_core::{
     ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, Severity,
     WarningKind,

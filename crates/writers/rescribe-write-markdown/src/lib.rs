@@ -2,6 +2,8 @@
 //!
 //! Emits rescribe's document IR as CommonMark-compatible Markdown.
 
+pub mod builder;
+
 use rescribe_core::{
     ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, Severity,
     WarningKind,

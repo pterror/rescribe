@@ -3,6 +3,8 @@
 //! Emits documents as plain text, stripping all formatting but preserving
 //! structure through whitespace.
 
+pub mod builder;
+
 use rescribe_core::{ConversionResult, Document, EmitError, EmitOptions, Node};
 use rescribe_std::{node, prop};
 
