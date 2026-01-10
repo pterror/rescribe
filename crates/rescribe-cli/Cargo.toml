@@ -1,0 +1,16 @@
+[package]
+name = "rescribe-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Universal document converter CLI"
+
+[[bin]]
+name = "rescribe"
+path = "src/main.rs"
+
+[dependencies]
+rescribe = { workspace = true, features = ["all"] }
+clap = { workspace = true }
+thiserror = { workspace = true }
