@@ -6,11 +6,18 @@ license.workspace = true
 repository.workspace = true
 description = "Markdown reader for rescribe"
 
+[features]
+default = ["tree-sitter"]
+pulldown = ["dep:pulldown-cmark"]
+tree-sitter = ["dep:tree-sitter", "dep:tree-sitter-md"]
+
 [dependencies]
 rescribe-core.workspace = true
 rescribe-std.workspace = true
-pulldown-cmark = "0.12"
+pulldown-cmark = { version = "0.12", optional = true }
 serde_yaml.workspace = true
+tree-sitter = { version = "0.26", optional = true }
+tree-sitter-md = { version = "0.5", optional = true }
 
 [dev-dependencies]
 rescribe-write-markdown.workspace = true

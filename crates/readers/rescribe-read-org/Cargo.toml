@@ -1,0 +1,22 @@
+[package]
+name = "rescribe-read-org"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Org-mode reader for rescribe"
+
+[features]
+default = ["handwritten"]
+handwritten = []
+# tree-sitter support pending: tree-sitter-org uses tree-sitter 0.20, incompatible with 0.26
+# tree-sitter = ["dep:tree-sitter", "dep:tree-sitter-org"]
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+# tree-sitter = { version = "0.26", optional = true }
+# tree-sitter-org = { version = "1.3", optional = true }
+
+[dev-dependencies]
+rescribe-write-org.workspace = true

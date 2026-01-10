@@ -5,8 +5,8 @@
 pub mod builder;
 
 use rescribe_core::{
-    ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, Severity,
-    WarningKind,
+    ConversionResult, Document, EmitError, EmitOptions, FidelityWarning, Node, ResourceId,
+    ResourceMap, Severity, WarningKind,
 };
 use rescribe_std::{node, prop};
 
@@ -18,9 +18,9 @@ pub fn emit(doc: &Document) -> Result<ConversionResult<Vec<u8>>, EmitError> {
 /// Emit a document as HTML with custom options.
 pub fn emit_with_options(
     doc: &Document,
-    _options: &EmitOptions,
+    options: &EmitOptions,
 ) -> Result<ConversionResult<Vec<u8>>, EmitError> {
-    let mut ctx = EmitContext::new();
+    let mut ctx = EmitContext::new(&doc.resources, options.pretty);
 
     // Emit children of the root document node
     emit_nodes(&doc.content.children, &mut ctx);
@@ -33,9 +33,21 @@ pub fn emit_with_options(
 
 /// Emit a document as a complete HTML document with doctype.
 pub fn emit_full_document(doc: &Document) -> Result<ConversionResult<Vec<u8>>, EmitError> {
-    let mut ctx = EmitContext::new();
+    emit_full_document_with_options(doc, &EmitOptions::default())
+}
 
-    ctx.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n</head>\n<body>\n");
+/// Emit a document as a complete HTML document with doctype and options.
+pub fn emit_full_document_with_options(
+    doc: &Document,
+    options: &EmitOptions,
+) -> Result<ConversionResult<Vec<u8>>, EmitError> {
+    let mut ctx = EmitContext::new(&doc.resources, options.pretty);
+
+    if ctx.pretty {
+        ctx.write("<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n</head>\n<body>\n");
+    } else {
+        ctx.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n</head>\n<body>\n");
+    }
     emit_nodes(&doc.content.children, &mut ctx);
     ctx.write("\n</body>\n</html>\n");
 
@@ -46,22 +58,74 @@ pub fn emit_full_document(doc: &Document) -> Result<ConversionResult<Vec<u8>>, E
 }
 
 /// Emit context for tracking state during emission.
-struct EmitContext {
+struct EmitContext<'a> {
     output: String,
     warnings: Vec<FidelityWarning>,
+    resources: &'a ResourceMap,
+    pretty: bool,
+    indent: usize,
 }
 
-impl EmitContext {
-    fn new() -> Self {
+impl<'a> EmitContext<'a> {
+    fn new(resources: &'a ResourceMap, pretty: bool) -> Self {
         Self {
             output: String::new(),
             warnings: Vec::new(),
+            resources,
+            pretty,
+            indent: 0,
         }
     }
 
     fn write(&mut self, s: &str) {
         self.output.push_str(s);
     }
+
+    /// Write a newline and indentation (only in pretty mode).
+    fn newline(&mut self) {
+        if self.pretty {
+            self.output.push('\n');
+            for _ in 0..self.indent {
+                self.output.push_str("  ");
+            }
+        }
+    }
+
+    /// Increase indentation level.
+    fn indent(&mut self) {
+        self.indent += 1;
+    }
+
+    /// Decrease indentation level.
+    fn dedent(&mut self) {
+        self.indent = self.indent.saturating_sub(1);
+    }
+}
+
+/// Check if a node kind is a block element.
+fn is_block_node(kind: &str) -> bool {
+    matches!(
+        kind,
+        node::PARAGRAPH
+            | node::HEADING
+            | node::CODE_BLOCK
+            | node::BLOCKQUOTE
+            | node::LIST
+            | node::LIST_ITEM
+            | node::TABLE
+            | node::TABLE_HEAD
+            | node::TABLE_BODY
+            | node::TABLE_FOOT
+            | node::TABLE_ROW
+            | node::FIGURE
+            | node::HORIZONTAL_RULE
+            | node::DIV
+            | node::RAW_BLOCK
+            | node::DEFINITION_LIST
+            | node::DEFINITION_TERM
+            | node::DEFINITION_DESC
+            | node::FOOTNOTE_DEF
+    )
 }
 
 /// Emit a sequence of nodes.
@@ -75,34 +139,37 @@ fn emit_nodes(nodes: &[Node], ctx: &mut EmitContext) {
 fn emit_node(node: &Node, ctx: &mut EmitContext) {
     match node.kind.as_str() {
         node::DOCUMENT => emit_nodes(&node.children, ctx),
-        node::PARAGRAPH => emit_tag("p", node, ctx),
+        node::PARAGRAPH => emit_block_tag("p", node, ctx),
         node::HEADING => emit_heading(node, ctx),
         node::CODE_BLOCK => emit_code_block(node, ctx),
-        node::BLOCKQUOTE => emit_tag("blockquote", node, ctx),
+        node::BLOCKQUOTE => emit_block_tag("blockquote", node, ctx),
         node::LIST => emit_list(node, ctx),
-        node::LIST_ITEM => emit_tag("li", node, ctx),
-        node::TABLE => emit_tag("table", node, ctx),
-        node::TABLE_HEAD => emit_tag("thead", node, ctx),
-        node::TABLE_BODY => emit_tag("tbody", node, ctx),
-        node::TABLE_FOOT => emit_tag("tfoot", node, ctx),
-        node::TABLE_ROW => emit_tag("tr", node, ctx),
+        node::LIST_ITEM => emit_block_tag("li", node, ctx),
+        node::TABLE => emit_block_tag("table", node, ctx),
+        node::TABLE_HEAD => emit_block_tag("thead", node, ctx),
+        node::TABLE_BODY => emit_block_tag("tbody", node, ctx),
+        node::TABLE_FOOT => emit_block_tag("tfoot", node, ctx),
+        node::TABLE_ROW => emit_block_tag("tr", node, ctx),
         node::TABLE_CELL => emit_table_cell(node, "td", ctx),
         node::TABLE_HEADER => emit_table_cell(node, "th", ctx),
-        node::FIGURE => emit_tag("figure", node, ctx),
-        node::CAPTION => emit_tag("figcaption", node, ctx),
-        node::HORIZONTAL_RULE => ctx.write("<hr>"),
+        node::FIGURE => emit_block_tag("figure", node, ctx),
+        node::CAPTION => emit_block_tag("figcaption", node, ctx),
+        node::HORIZONTAL_RULE => {
+            ctx.newline();
+            ctx.write("<hr>");
+        }
         node::DIV => emit_div(node, ctx),
         node::RAW_BLOCK => emit_raw(node, ctx),
-        node::DEFINITION_LIST => emit_tag("dl", node, ctx),
-        node::DEFINITION_TERM => emit_tag("dt", node, ctx),
-        node::DEFINITION_DESC => emit_tag("dd", node, ctx),
+        node::DEFINITION_LIST => emit_block_tag("dl", node, ctx),
+        node::DEFINITION_TERM => emit_block_tag("dt", node, ctx),
+        node::DEFINITION_DESC => emit_block_tag("dd", node, ctx),
         node::TEXT => emit_text(node, ctx),
-        node::EMPHASIS => emit_tag("em", node, ctx),
-        node::STRONG => emit_tag("strong", node, ctx),
-        node::STRIKEOUT => emit_tag("del", node, ctx),
-        node::UNDERLINE => emit_tag("u", node, ctx),
-        node::SUBSCRIPT => emit_tag("sub", node, ctx),
-        node::SUPERSCRIPT => emit_tag("sup", node, ctx),
+        node::EMPHASIS => emit_inline_tag("em", node, ctx),
+        node::STRONG => emit_inline_tag("strong", node, ctx),
+        node::STRIKEOUT => emit_inline_tag("del", node, ctx),
+        node::UNDERLINE => emit_inline_tag("u", node, ctx),
+        node::SUBSCRIPT => emit_inline_tag("sub", node, ctx),
+        node::SUPERSCRIPT => emit_inline_tag("sup", node, ctx),
         node::CODE => emit_inline_code(node, ctx),
         node::LINK => emit_link(node, ctx),
         node::IMAGE => emit_image(node, ctx),
@@ -112,7 +179,7 @@ fn emit_node(node: &Node, ctx: &mut EmitContext) {
         node::RAW_INLINE => emit_raw(node, ctx),
         node::FOOTNOTE_REF => emit_footnote_ref(node, ctx),
         node::FOOTNOTE_DEF => emit_footnote_def(node, ctx),
-        node::SMALL_CAPS => emit_tag("small", node, ctx),
+        node::SMALL_CAPS => emit_inline_tag("small", node, ctx),
         node::QUOTED => emit_quoted(node, ctx),
         "math_inline" => emit_math_inline(node, ctx),
         "math_display" => emit_math_display(node, ctx),
@@ -128,8 +195,33 @@ fn emit_node(node: &Node, ctx: &mut EmitContext) {
     }
 }
 
-/// Emit a simple tag with children.
-fn emit_tag(tag: &str, node: &Node, ctx: &mut EmitContext) {
+/// Emit a block-level tag with children (adds newlines in pretty mode).
+fn emit_block_tag(tag: &str, node: &Node, ctx: &mut EmitContext) {
+    ctx.newline();
+    ctx.write("<");
+    ctx.write(tag);
+    emit_common_attrs(node, ctx);
+    ctx.write(">");
+
+    // Check if children are all inline
+    let has_block_children = node.children.iter().any(|c| is_block_node(c.kind.as_str()));
+
+    if has_block_children {
+        ctx.indent();
+        emit_nodes(&node.children, ctx);
+        ctx.dedent();
+        ctx.newline();
+    } else {
+        emit_nodes(&node.children, ctx);
+    }
+
+    ctx.write("</");
+    ctx.write(tag);
+    ctx.write(">");
+}
+
+/// Emit an inline tag with children (no newlines).
+fn emit_inline_tag(tag: &str, node: &Node, ctx: &mut EmitContext) {
     ctx.write("<");
     ctx.write(tag);
     emit_common_attrs(node, ctx);
@@ -165,13 +257,13 @@ fn emit_heading(node: &Node, ctx: &mut EmitContext) {
         5 => "h5",
         _ => "h6",
     };
-    emit_tag(tag, node, ctx);
+    emit_block_tag(tag, node, ctx);
 }
 
 /// Emit a code block.
 fn emit_code_block(node: &Node, ctx: &mut EmitContext) {
-    ctx.write("<pre>");
-    ctx.write("<code");
+    ctx.newline();
+    ctx.write("<pre><code");
 
     if let Some(lang) = node.props.get_str(prop::LANGUAGE) {
         ctx.write(" class=\"language-");
@@ -193,6 +285,7 @@ fn emit_list(node: &Node, ctx: &mut EmitContext) {
     let ordered = node.props.get_bool(prop::ORDERED).unwrap_or(false);
     let tag = if ordered { "ol" } else { "ul" };
 
+    ctx.newline();
     ctx.write("<");
     ctx.write(tag);
 
@@ -206,7 +299,10 @@ fn emit_list(node: &Node, ctx: &mut EmitContext) {
     }
 
     ctx.write(">");
+    ctx.indent();
     emit_nodes(&node.children, ctx);
+    ctx.dedent();
+    ctx.newline();
     ctx.write("</");
     ctx.write(tag);
     ctx.write(">");
@@ -214,6 +310,7 @@ fn emit_list(node: &Node, ctx: &mut EmitContext) {
 
 /// Emit a table cell.
 fn emit_table_cell(node: &Node, tag: &str, ctx: &mut EmitContext) {
+    ctx.newline();
     ctx.write("<");
     ctx.write(tag);
 
@@ -242,10 +339,21 @@ fn emit_table_cell(node: &Node, tag: &str, ctx: &mut EmitContext) {
 
 /// Emit a div element.
 fn emit_div(node: &Node, ctx: &mut EmitContext) {
+    ctx.newline();
     ctx.write("<div");
     emit_common_attrs(node, ctx);
     ctx.write(">");
-    emit_nodes(&node.children, ctx);
+
+    let has_block_children = node.children.iter().any(|c| is_block_node(c.kind.as_str()));
+    if has_block_children {
+        ctx.indent();
+        emit_nodes(&node.children, ctx);
+        ctx.dedent();
+        ctx.newline();
+    } else {
+        emit_nodes(&node.children, ctx);
+    }
+
     ctx.write("</div>");
 }
 
@@ -300,7 +408,18 @@ fn emit_link(node: &Node, ctx: &mut EmitContext) {
 fn emit_image(node: &Node, ctx: &mut EmitContext) {
     ctx.write("<img");
 
-    if let Some(url) = node.props.get_str(prop::URL) {
+    // Check for embedded resource first
+    if let Some(resource_id_str) = node.props.get_str(prop::RESOURCE_ID) {
+        let resource_id = ResourceId::from_string(resource_id_str);
+        if let Some(resource) = ctx.resources.get(&resource_id) {
+            // Emit as data URI
+            ctx.write(" src=\"data:");
+            ctx.write(&resource.mime_type);
+            ctx.write(";base64,");
+            ctx.write(&base64_encode(&resource.data));
+            ctx.write("\"");
+        }
+    } else if let Some(url) = node.props.get_str(prop::URL) {
         ctx.write(" src=\"");
         ctx.write(&escape_attr(url));
         ctx.write("\"");
@@ -343,6 +462,7 @@ fn emit_footnote_ref(node: &Node, ctx: &mut EmitContext) {
 /// Emit a footnote definition.
 fn emit_footnote_def(node: &Node, ctx: &mut EmitContext) {
     let label = node.props.get_str(prop::LABEL).unwrap_or("?");
+    ctx.newline();
     ctx.write("<div id=\"fn-");
     ctx.write(&escape_attr(label));
     ctx.write("\" class=\"footnote\"><sup>");
@@ -404,6 +524,36 @@ fn escape_attr(text: &str) -> String {
             _ => result.push(c),
         }
     }
+    result
+}
+
+/// Base64 encode bytes.
+fn base64_encode(data: &[u8]) -> String {
+    const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+    let mut result = String::with_capacity(data.len().div_ceil(3) * 4);
+
+    for chunk in data.chunks(3) {
+        let b0 = chunk[0];
+        let b1 = chunk.get(1).copied().unwrap_or(0);
+        let b2 = chunk.get(2).copied().unwrap_or(0);
+
+        result.push(ALPHABET[(b0 >> 2) as usize] as char);
+        result.push(ALPHABET[((b0 & 0x03) << 4 | b1 >> 4) as usize] as char);
+
+        if chunk.len() > 1 {
+            result.push(ALPHABET[((b1 & 0x0f) << 2 | b2 >> 6) as usize] as char);
+        } else {
+            result.push('=');
+        }
+
+        if chunk.len() > 2 {
+            result.push(ALPHABET[(b2 & 0x3f) as usize] as char);
+        } else {
+            result.push('=');
+        }
+    }
+
     result
 }
 
@@ -478,5 +628,43 @@ mod tests {
         let output = emit_str(&doc);
         assert!(output.contains("&lt;script&gt;"));
         assert!(!output.contains("<script>"));
+    }
+
+    #[test]
+    fn test_pretty_print_list() {
+        let doc = html(|d| d.ul(|l| l.li(|i| i.text("item 1")).li(|i| i.text("item 2"))));
+
+        // Default (not pretty)
+        let output = emit_str(&doc);
+        assert!(!output.contains('\n'));
+
+        // Pretty mode
+        let options = EmitOptions {
+            pretty: true,
+            ..Default::default()
+        };
+        let result = emit_with_options(&doc, &options).unwrap();
+        let pretty_output = String::from_utf8(result.value).unwrap();
+
+        // Should have newlines and indentation
+        assert!(pretty_output.contains('\n'));
+        assert!(pretty_output.contains("  <li>"));
+    }
+
+    #[test]
+    fn test_pretty_print_nested() {
+        // Build a nested structure: blockquote with paragraphs
+        let doc = html(|d| d.blockquote(|bq| bq.p(|p| p.text("first")).p(|p| p.text("second"))));
+
+        let options = EmitOptions {
+            pretty: true,
+            ..Default::default()
+        };
+        let result = emit_with_options(&doc, &options).unwrap();
+        let output = String::from_utf8(result.value).unwrap();
+
+        // Should have proper nesting with increased indentation
+        assert!(output.contains('\n'));
+        assert!(output.contains("  <p>"));
     }
 }

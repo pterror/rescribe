@@ -28,8 +28,8 @@
 //!
 //! - `markdown` - Markdown reader/writer (default)
 //! - `html` - HTML reader/writer (default)
-//! - `latex` - LaTeX writer
-//! - `org` - Org-mode writer
+//! - `latex` - LaTeX reader/writer
+//! - `org` - Org-mode reader/writer
 //! - `plaintext` - Plain text writer
 //! - `std` - Standard node kinds (default)
 //! - `math` - Math node kinds
@@ -93,6 +93,8 @@ pub mod html {
 /// LaTeX format support.
 #[cfg(feature = "latex")]
 pub mod latex {
+    pub use rescribe_read_latex::parse;
+    pub use rescribe_read_latex::parse_with_options;
     pub use rescribe_write_latex::emit;
     pub use rescribe_write_latex::emit_full_document;
     pub use rescribe_write_latex::emit_with_options;
@@ -101,6 +103,8 @@ pub mod latex {
 /// Org-mode format support.
 #[cfg(feature = "org")]
 pub mod org {
+    pub use rescribe_read_org::parse;
+    pub use rescribe_read_org::parse_with_options;
     pub use rescribe_write_org::emit;
     pub use rescribe_write_org::emit_with_options;
 }

@@ -14,7 +14,7 @@
   - Populate `Document.metadata` field
   - Emit metadata in writers where applicable
 
-- [ ] **Resource embedding**
+- [x] **Resource embedding**
   - Wire up `ParseOptions::embed_resources`
   - Populate `Document.resources` in readers
   - Emit embedded resources (data URIs, inline) in writers
@@ -23,16 +23,16 @@
 ## Priority 2: Options
 
 - [ ] **Implement ParseOptions**
-  - `embed_resources`: Actually embed images/resources
-  - `preserve_source_info`: Track source spans
+  - [x] `embed_resources`: Actually embed images/resources
+  - [ ] `preserve_source_info`: Track source spans
 
 - [ ] **Implement EmitOptions**
-  - `pretty`: Pretty-print output
-  - `use_source_info`: Use original formatting hints
+  - [x] `pretty`: Pretty-print output (HTML writer)
+  - [ ] `use_source_info`: Use original formatting hints
 
 ## Priority 3: Additional Readers
 
-- [ ] **LaTeX reader** (currently write-only)
+- [x] **LaTeX reader** (basic support for sections, lists, verbatim, math)
 - [ ] **Org-mode reader** (currently write-only)
 
 ## Future

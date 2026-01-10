@@ -1,0 +1,21 @@
+[package]
+name = "rescribe-read-latex"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "LaTeX reader for rescribe"
+
+[features]
+default = ["handwritten"]
+handwritten = []
+tree-sitter = ["dep:tree-sitter", "dep:tree-sitter-latex"]
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+tree-sitter = { version = "0.26", optional = true }
+tree-sitter-latex = { package = "codebook-tree-sitter-latex", version = "0.6", optional = true }
+
+[dev-dependencies]
+rescribe-write-latex.workspace = true

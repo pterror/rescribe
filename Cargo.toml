@@ -24,6 +24,8 @@ rescribe-math = { path = "crates/nodes/rescribe-math" }
 rescribe-read-markdown = { path = "crates/readers/rescribe-read-markdown" }
 rescribe-write-markdown = { path = "crates/writers/rescribe-write-markdown" }
 rescribe-read-html = { path = "crates/readers/rescribe-read-html" }
+rescribe-read-latex = { path = "crates/readers/rescribe-read-latex" }
+rescribe-read-org = { path = "crates/readers/rescribe-read-org" }
 rescribe-write-html = { path = "crates/writers/rescribe-write-html" }
 rescribe-write-plaintext = { path = "crates/writers/rescribe-write-plaintext" }
 rescribe-write-latex = { path = "crates/writers/rescribe-write-latex" }
