@@ -170,124 +170,27 @@ pub mod prop {
     pub const DOCX_PREFIX: &str = "docx:";
 }
 
-/// Helper functions for creating common nodes.
-pub mod helpers {
-    use crate::{Node, node, prop};
-
-    /// Create a text node with the given content.
-    pub fn text(content: impl Into<String>) -> Node {
-        Node::new(node::TEXT).prop(prop::CONTENT, content.into())
-    }
-
-    /// Create a paragraph with children.
-    pub fn paragraph(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::PARAGRAPH).children(children)
-    }
-
-    /// Create a heading with the given level and children.
-    pub fn heading(level: i64, children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::HEADING)
-            .prop(prop::LEVEL, level)
-            .children(children)
-    }
-
-    /// Create a code block with optional language.
-    pub fn code_block(code: impl Into<String>, language: Option<&str>) -> Node {
-        let mut node = Node::new(node::CODE_BLOCK).prop(prop::CONTENT, code.into());
-        if let Some(lang) = language {
-            node = node.prop(prop::LANGUAGE, lang);
-        }
-        node
-    }
-
-    /// Create a link with URL and children.
-    pub fn link(url: impl Into<String>, children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::LINK)
-            .prop(prop::URL, url.into())
-            .children(children)
-    }
-
-    /// Create an image with URL and alt text.
-    pub fn image(url: impl Into<String>, alt: impl Into<String>) -> Node {
-        Node::new(node::IMAGE)
-            .prop(prop::URL, url.into())
-            .prop(prop::ALT, alt.into())
-    }
-
-    /// Create an unordered list.
-    pub fn bullet_list(items: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::LIST)
-            .prop(prop::ORDERED, false)
-            .children(items)
-    }
-
-    /// Create an ordered list.
-    pub fn ordered_list(items: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::LIST)
-            .prop(prop::ORDERED, true)
-            .children(items)
-    }
-
-    /// Create a list item.
-    pub fn list_item(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::LIST_ITEM).children(children)
-    }
-
-    /// Create a blockquote.
-    pub fn blockquote(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::BLOCKQUOTE).children(children)
-    }
-
-    /// Create emphasis (italic).
-    pub fn emphasis(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::EMPHASIS).children(children)
-    }
-
-    /// Create strong (bold).
-    pub fn strong(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::STRONG).children(children)
-    }
-
-    /// Create inline code.
-    pub fn code(content: impl Into<String>) -> Node {
-        Node::new(node::CODE).prop(prop::CONTENT, content.into())
-    }
-
-    /// Create a horizontal rule.
-    pub fn horizontal_rule() -> Node {
-        Node::new(node::HORIZONTAL_RULE)
-    }
-
-    /// Create a hard line break.
-    pub fn line_break() -> Node {
-        Node::new(node::LINE_BREAK)
-    }
-
-    /// Create a soft line break.
-    pub fn soft_break() -> Node {
-        Node::new(node::SOFT_BREAK)
-    }
-
-    /// Create a document with children.
-    pub fn document(children: impl IntoIterator<Item = Node>) -> Node {
-        Node::new(node::DOCUMENT).children(children)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::builder::doc;
 
     #[test]
     fn test_create_text_node() {
-        let node = helpers::text("Hello, world!");
-        assert_eq!(node.kind.as_str(), node::TEXT);
-        assert_eq!(node.props.get_str(prop::CONTENT), Some("Hello, world!"));
+        let document = doc(|d| d.para(|i| i.text("Hello, world!")));
+        let para = &document.content.children[0];
+        let text_node = &para.children[0];
+        assert_eq!(text_node.kind.as_str(), node::TEXT);
+        assert_eq!(
+            text_node.props.get_str(prop::CONTENT),
+            Some("Hello, world!")
+        );
     }
 
     #[test]
     fn test_create_heading() {
-        let h1 = helpers::heading(1, [helpers::text("Title")]);
+        let document = doc(|d| d.heading(1, |i| i.text("Title")));
+        let h1 = &document.content.children[0];
         assert_eq!(h1.kind.as_str(), node::HEADING);
         assert_eq!(h1.props.get_int(prop::LEVEL), Some(1));
         assert_eq!(h1.children.len(), 1);
@@ -295,17 +198,18 @@ mod tests {
 
     #[test]
     fn test_create_link() {
-        let link = helpers::link("https://example.com", [helpers::text("Example")]);
+        let document = doc(|d| d.para(|i| i.link("https://example.com", |i| i.text("Example"))));
+        let para = &document.content.children[0];
+        let link = &para.children[0];
         assert_eq!(link.kind.as_str(), node::LINK);
         assert_eq!(link.props.get_str(prop::URL), Some("https://example.com"));
     }
 
     #[test]
     fn test_create_list() {
-        let list = helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("Item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("Item 2")])]),
-        ]);
+        let document =
+            doc(|d| d.bullet_list(|l| l.item(|i| i.text("Item 1")).item(|i| i.text("Item 2"))));
+        let list = &document.content.children[0];
         assert_eq!(list.kind.as_str(), node::LIST);
         assert_eq!(list.props.get_bool(prop::ORDERED), Some(false));
         assert_eq!(list.children.len(), 2);

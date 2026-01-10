@@ -477,7 +477,7 @@ fn escape_latex(text: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rescribe_std::helpers;
+    use crate::builder::latex;
 
     fn emit_str(doc: &Document) -> String {
         let result = emit(doc).unwrap();
@@ -486,160 +486,113 @@ mod tests {
 
     #[test]
     fn test_emit_paragraph() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello, world!",
-            )])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("Hello, world!"));
+        let doc = latex(|d| d.para(|i| i.text("Hello, world!")));
+        let output = emit_str(&doc);
+        assert!(output.contains("Hello, world!"));
     }
 
     #[test]
     fn test_emit_heading() {
-        let doc = Document::new().with_content(helpers::document([helpers::heading(
-            1,
-            [helpers::text("Main Title")],
-        )]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\section{Main Title}"));
+        let doc = latex(|d| d.section(|i| i.text("Main Title")));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\section{Main Title}"));
     }
 
     #[test]
     fn test_emit_heading_levels() {
-        let doc = Document::new().with_content(helpers::document([
-            helpers::heading(1, [helpers::text("Level 1")]),
-            helpers::heading(2, [helpers::text("Level 2")]),
-            helpers::heading(3, [helpers::text("Level 3")]),
-        ]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\section{Level 1}"));
-        assert!(latex.contains("\\subsection{Level 2}"));
-        assert!(latex.contains("\\subsubsection{Level 3}"));
+        let doc = latex(|d| {
+            d.section(|i| i.text("Level 1"))
+                .subsection(|i| i.text("Level 2"))
+                .subsubsection(|i| i.text("Level 3"))
+        });
+        let output = emit_str(&doc);
+        assert!(output.contains("\\section{Level 1}"));
+        assert!(output.contains("\\subsection{Level 2}"));
+        assert!(output.contains("\\subsubsection{Level 3}"));
     }
 
     #[test]
     fn test_emit_emphasis() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::emphasis([helpers::text("italic")]),
-        ])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\emph{italic}"));
+        let doc = latex(|d| d.para(|i| i.emph(|i| i.text("italic"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\emph{italic}"));
     }
 
     #[test]
     fn test_emit_strong() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::strong([helpers::text("bold")]),
-        ])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\textbf{bold}"));
+        let doc = latex(|d| d.para(|i| i.bold(|i| i.text("bold"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\textbf{bold}"));
     }
 
     #[test]
     fn test_emit_link() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::link(
-                "https://example.com",
-                [helpers::text("click")],
-            )])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\href{https://example.com}{click}"));
+        let doc = latex(|d| d.para(|i| i.href("https://example.com", |i| i.text("click"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\href{https://example.com}{click}"));
     }
 
     #[test]
     fn test_emit_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("item 2")])]),
-        ])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\begin{itemize}"));
-        assert!(latex.contains("\\item item 1"));
-        assert!(latex.contains("\\item item 2"));
-        assert!(latex.contains("\\end{itemize}"));
+        let doc = latex(|d| d.itemize(|l| l.item(|i| i.text("item 1")).item(|i| i.text("item 2"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\begin{itemize}"));
+        assert!(output.contains("\\item item 1"));
+        assert!(output.contains("\\item item 2"));
+        assert!(output.contains("\\end{itemize}"));
     }
 
     #[test]
     fn test_emit_ordered_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::ordered_list([
-            helpers::list_item([helpers::paragraph([helpers::text("first")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("second")])]),
-        ])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\begin{enumerate}"));
-        assert!(latex.contains("\\item first"));
-        assert!(latex.contains("\\item second"));
-        assert!(latex.contains("\\end{enumerate}"));
+        let doc =
+            latex(|d| d.enumerate(|l| l.item(|i| i.text("first")).item(|i| i.text("second"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\begin{enumerate}"));
+        assert!(output.contains("\\item first"));
+        assert!(output.contains("\\item second"));
+        assert!(output.contains("\\end{enumerate}"));
     }
 
     #[test]
     fn test_emit_code_block() {
-        let doc = Document::new().with_content(helpers::document([helpers::code_block(
-            "fn main() {}",
-            Some("rust"),
-        )]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\begin{lstlisting}[language=rust]"));
-        assert!(latex.contains("fn main() {}"));
-        assert!(latex.contains("\\end{lstlisting}"));
+        let doc = latex(|d| d.lstlisting("rust", "fn main() {}"));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\begin{lstlisting}[language=rust]"));
+        assert!(output.contains("fn main() {}"));
+        assert!(output.contains("\\end{lstlisting}"));
     }
 
     #[test]
     fn test_emit_blockquote() {
-        let doc = Document::new().with_content(helpers::document([helpers::blockquote([
-            helpers::paragraph([helpers::text("A quote")]),
-        ])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\begin{quote}"));
-        assert!(latex.contains("A quote"));
-        assert!(latex.contains("\\end{quote}"));
+        let doc = latex(|d| d.quote(|b| b.para(|i| i.text("A quote"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\begin{quote}"));
+        assert!(output.contains("A quote"));
+        assert!(output.contains("\\end{quote}"));
     }
 
     #[test]
     fn test_emit_image() {
-        let doc = Document::new().with_content(helpers::document([helpers::image(
-            "test.png",
-            "Test image",
-        )]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\includegraphics{test.png}"));
+        let doc = latex(|d| d.figure(|f| f.includegraphics("test.png")));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\includegraphics{test.png}"));
     }
 
     #[test]
     fn test_escape_latex() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "$100 & 50% off #1",
-            )])]));
-
-        let latex = emit_str(&doc);
-        assert!(latex.contains("\\$100 \\& 50\\% off \\#1"));
+        let doc = latex(|d| d.para(|i| i.text("$100 & 50% off #1")));
+        let output = emit_str(&doc);
+        assert!(output.contains("\\$100 \\& 50\\% off \\#1"));
     }
 
     #[test]
     fn test_emit_full_document() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello",
-            )])]));
-
+        let doc = latex(|d| d.para(|i| i.text("Hello")));
         let result = emit_full_document(&doc).unwrap();
-        let latex = String::from_utf8(result.value).unwrap();
-
-        assert!(latex.contains("\\documentclass{article}"));
-        assert!(latex.contains("\\begin{document}"));
-        assert!(latex.contains("Hello"));
-        assert!(latex.contains("\\end{document}"));
+        let output = String::from_utf8(result.value).unwrap();
+        assert!(output.contains("\\documentclass{article}"));
+        assert!(output.contains("\\begin{document}"));
+        assert!(output.contains("Hello"));
+        assert!(output.contains("\\end{document}"));
     }
 }

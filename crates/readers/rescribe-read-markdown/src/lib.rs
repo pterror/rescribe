@@ -6,7 +6,7 @@ use pulldown_cmark::{CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, T
 use rescribe_core::{
     ConversionResult, Document, FidelityWarning, ParseError, ParseOptions, Severity, WarningKind,
 };
-use rescribe_std::{Node, helpers, node, prop};
+use rescribe_std::{Node, node, prop};
 
 /// Parse markdown text into a rescribe Document.
 pub fn parse(input: &str) -> Result<ConversionResult<Document>, ParseError> {
@@ -58,11 +58,17 @@ fn parse_events(events: &[Event<'_>], warnings: &mut Vec<FidelityWarning>) -> Ve
 fn parse_event(events: &[Event<'_>], warnings: &mut Vec<FidelityWarning>) -> (Option<Node>, usize) {
     match &events[0] {
         Event::Start(tag) => parse_tag(tag.clone(), events, warnings),
-        Event::Text(text) => (Some(helpers::text(text.to_string())), 1),
-        Event::Code(code) => (Some(helpers::code(code.to_string())), 1),
-        Event::SoftBreak => (Some(helpers::soft_break()), 1),
-        Event::HardBreak => (Some(helpers::line_break()), 1),
-        Event::Rule => (Some(helpers::horizontal_rule()), 1),
+        Event::Text(text) => (
+            Some(Node::new(node::TEXT).prop(prop::CONTENT, text.to_string())),
+            1,
+        ),
+        Event::Code(code) => (
+            Some(Node::new(node::CODE).prop(prop::CONTENT, code.to_string())),
+            1,
+        ),
+        Event::SoftBreak => (Some(Node::new(node::SOFT_BREAK)), 1),
+        Event::HardBreak => (Some(Node::new(node::LINE_BREAK)), 1),
+        Event::Rule => (Some(Node::new(node::HORIZONTAL_RULE)), 1),
         Event::End(_) => (None, 1), // Handled by parent
         Event::Html(html) => {
             // Raw HTML block

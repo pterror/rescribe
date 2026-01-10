@@ -362,7 +362,8 @@ fn emit_node(node: &Node, ctx: &mut EmitContext) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rescribe_std::helpers;
+    use crate::builder::plaintext;
+    use rescribe_std::builder::doc;
 
     fn emit_str(doc: &Document) -> String {
         let result = emit(doc).unwrap();
@@ -371,105 +372,77 @@ mod tests {
 
     #[test]
     fn test_emit_paragraph() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello, world!",
-            )])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("Hello, world!"));
+        let doc = plaintext(|d| d.para("Hello, world!"));
+        let output = emit_str(&doc);
+        assert!(output.contains("Hello, world!"));
     }
 
     #[test]
     fn test_emit_heading() {
-        let doc = Document::new().with_content(helpers::document([helpers::heading(
-            1,
-            [helpers::text("Main Title")],
-        )]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("Main Title"));
+        let doc = plaintext(|d| d.heading(1, "Main Title"));
+        let output = emit_str(&doc);
+        assert!(output.contains("Main Title"));
     }
 
     #[test]
     fn test_emit_strips_formatting() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::text("Normal "),
-            helpers::strong([helpers::text("bold")]),
-            helpers::text(" and "),
-            helpers::emphasis([helpers::text("italic")]),
-        ])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("Normal bold and italic"));
+        // Use generic builder to test that formatting is stripped
+        let doc = doc(|d| {
+            d.para(|i| {
+                i.text("Normal ")
+                    .strong(|i| i.text("bold"))
+                    .text(" and ")
+                    .em(|i| i.text("italic"))
+            })
+        });
+        let output = emit_str(&doc);
+        assert!(output.contains("Normal bold and italic"));
     }
 
     #[test]
     fn test_emit_link() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::link(
-                "https://example.com",
-                [helpers::text("click here")],
-            )])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("click here"));
-        assert!(text.contains("(https://example.com)"));
+        // Use generic builder for link test since plaintext builder doesn't have links
+        let doc = doc(|d| d.para(|i| i.link("https://example.com", |i| i.text("click here"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("click here"));
+        assert!(output.contains("(https://example.com)"));
     }
 
     #[test]
     fn test_emit_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("item 2")])]),
-        ])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("- item 1"));
-        assert!(text.contains("- item 2"));
+        let doc = plaintext(|d| d.list(|l| l.item("item 1").item("item 2")));
+        let output = emit_str(&doc);
+        assert!(output.contains("- item 1"));
+        assert!(output.contains("- item 2"));
     }
 
     #[test]
     fn test_emit_ordered_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::ordered_list([
-            helpers::list_item([helpers::paragraph([helpers::text("first")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("second")])]),
-        ])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("1. first"));
-        assert!(text.contains("2. second"));
+        let doc = plaintext(|d| d.numbered_list(|l| l.item("first").item("second")));
+        let output = emit_str(&doc);
+        assert!(output.contains("1. first"));
+        assert!(output.contains("2. second"));
     }
 
     #[test]
     fn test_emit_code_block() {
-        let doc = Document::new().with_content(helpers::document([helpers::code_block(
-            "fn main() {}",
-            None,
-        )]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("    fn main() {}"));
+        let doc = plaintext(|d| d.code_block("fn main() {}"));
+        let output = emit_str(&doc);
+        assert!(output.contains("    fn main() {}"));
     }
 
     #[test]
     fn test_emit_blockquote() {
-        let doc = Document::new().with_content(helpers::document([helpers::blockquote([
-            helpers::paragraph([helpers::text("A quote")]),
-        ])]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("> A quote"));
+        let doc = plaintext(|d| d.quote(|b| b.para("A quote")));
+        let output = emit_str(&doc);
+        assert!(output.contains("> A quote"));
     }
 
     #[test]
     fn test_emit_image() {
-        let doc = Document::new().with_content(helpers::document([helpers::image(
-            "test.png",
-            "Test image",
-        )]));
-
-        let text = emit_str(&doc);
-        assert!(text.contains("[Image: Test image]"));
+        // Use generic builder for image test since plaintext builder doesn't have images
+        let doc = doc(|d| d.para(|i| i.image("test.png", "Test image")));
+        let output = emit_str(&doc);
+        assert!(output.contains("[Image: Test image]"));
     }
 }

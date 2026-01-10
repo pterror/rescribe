@@ -117,7 +117,7 @@ pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
 
     #[cfg(feature = "std")]
-    pub use crate::std::{helpers, node, prop};
+    pub use crate::std::{builder, node, prop};
 }
 
 #[cfg(test)]
@@ -155,17 +155,13 @@ mod tests {
     #[test]
     #[cfg(feature = "std")]
     fn test_build_document_manually() {
-        use crate::std::helpers;
+        use crate::std::builder::doc;
 
-        let doc = Document::new().with_content(helpers::document([
-            helpers::heading(1, [helpers::text("Manual Document")]),
-            helpers::paragraph([
-                helpers::text("This is "),
-                helpers::strong([helpers::text("bold")]),
-                helpers::text(" text."),
-            ]),
-        ]));
+        let document = doc(|d| {
+            d.heading(1, |i| i.text("Manual Document"))
+                .para(|i| i.text("This is ").strong(|i| i.text("bold")).text(" text."))
+        });
 
-        assert_eq!(doc.content.children.len(), 2);
+        assert_eq!(document.content.children.len(), 2);
     }
 }

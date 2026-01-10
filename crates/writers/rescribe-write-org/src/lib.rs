@@ -496,7 +496,7 @@ fn emit_image(node: &Node, ctx: &mut EmitContext) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rescribe_std::helpers;
+    use crate::builder::org;
 
     fn emit_str(doc: &Document) -> String {
         let result = emit(doc).unwrap();
@@ -505,140 +505,99 @@ mod tests {
 
     #[test]
     fn test_emit_paragraph() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello, world!",
-            )])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("Hello, world!"));
+        let doc = org(|d| d.para(|i| i.text("Hello, world!")));
+        let output = emit_str(&doc);
+        assert!(output.contains("Hello, world!"));
     }
 
     #[test]
     fn test_emit_heading() {
-        let doc = Document::new().with_content(helpers::document([helpers::heading(
-            1,
-            [helpers::text("Main Title")],
-        )]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("* Main Title"));
+        let doc = org(|d| d.heading(1, |i| i.text("Main Title")));
+        let output = emit_str(&doc);
+        assert!(output.contains("* Main Title"));
     }
 
     #[test]
     fn test_emit_heading_levels() {
-        let doc = Document::new().with_content(helpers::document([
-            helpers::heading(1, [helpers::text("Level 1")]),
-            helpers::heading(2, [helpers::text("Level 2")]),
-            helpers::heading(3, [helpers::text("Level 3")]),
-        ]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("* Level 1"));
-        assert!(org.contains("** Level 2"));
-        assert!(org.contains("*** Level 3"));
+        let doc = org(|d| {
+            d.heading(1, |i| i.text("Level 1"))
+                .heading(2, |i| i.text("Level 2"))
+                .heading(3, |i| i.text("Level 3"))
+        });
+        let output = emit_str(&doc);
+        assert!(output.contains("* Level 1"));
+        assert!(output.contains("** Level 2"));
+        assert!(output.contains("*** Level 3"));
     }
 
     #[test]
     fn test_emit_emphasis() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::emphasis([helpers::text("italic")]),
-        ])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("/italic/"));
+        let doc = org(|d| d.para(|i| i.italic(|i| i.text("italic"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("/italic/"));
     }
 
     #[test]
     fn test_emit_strong() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::strong([helpers::text("bold")]),
-        ])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("*bold*"));
+        let doc = org(|d| d.para(|i| i.bold(|i| i.text("bold"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("*bold*"));
     }
 
     #[test]
     fn test_emit_link() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::link(
-                "https://example.com",
-                [helpers::text("click")],
-            )])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("[[https://example.com][click]]"));
+        let doc = org(|d| d.para(|i| i.link("https://example.com", |i| i.text("click"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("[[https://example.com][click]]"));
     }
 
     #[test]
     fn test_emit_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("item 2")])]),
-        ])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("- item 1"));
-        assert!(org.contains("- item 2"));
+        let doc =
+            org(|d| d.unordered_list(|l| l.item(|i| i.text("item 1")).item(|i| i.text("item 2"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("- item 1"));
+        assert!(output.contains("- item 2"));
     }
 
     #[test]
     fn test_emit_ordered_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::ordered_list([
-            helpers::list_item([helpers::paragraph([helpers::text("first")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("second")])]),
-        ])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("1. first"));
-        assert!(org.contains("2. second"));
+        let doc =
+            org(|d| d.ordered_list(|l| l.item(|i| i.text("first")).item(|i| i.text("second"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("1. first"));
+        assert!(output.contains("2. second"));
     }
 
     #[test]
     fn test_emit_code_block() {
-        let doc = Document::new().with_content(helpers::document([helpers::code_block(
-            "fn main() {}",
-            Some("rust"),
-        )]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("#+BEGIN_SRC rust"));
-        assert!(org.contains("fn main() {}"));
-        assert!(org.contains("#+END_SRC"));
+        let doc = org(|d| d.src_block("rust", "fn main() {}"));
+        let output = emit_str(&doc);
+        assert!(output.contains("#+BEGIN_SRC rust"));
+        assert!(output.contains("fn main() {}"));
+        assert!(output.contains("#+END_SRC"));
     }
 
     #[test]
     fn test_emit_blockquote() {
-        let doc = Document::new().with_content(helpers::document([helpers::blockquote([
-            helpers::paragraph([helpers::text("A quote")]),
-        ])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("#+BEGIN_QUOTE"));
-        assert!(org.contains("A quote"));
-        assert!(org.contains("#+END_QUOTE"));
+        let doc = org(|d| d.quote(|b| b.para(|i| i.text("A quote"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("#+BEGIN_QUOTE"));
+        assert!(output.contains("A quote"));
+        assert!(output.contains("#+END_QUOTE"));
     }
 
     #[test]
     fn test_emit_image() {
-        let doc = Document::new().with_content(helpers::document([helpers::image(
-            "test.png",
-            "Test image",
-        )]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("[[file:test.png]]"));
+        let doc = org(|d| d.para(|i| i.image("test.png")));
+        let output = emit_str(&doc);
+        assert!(output.contains("[[file:test.png]]"));
     }
 
     #[test]
     fn test_emit_inline_code() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::code(
-                "inline code",
-            )])]));
-
-        let org = emit_str(&doc);
-        assert!(org.contains("=inline code="));
+        let doc = org(|d| d.para(|i| i.verbatim("inline code")));
+        let output = emit_str(&doc);
+        assert!(output.contains("=inline code="));
     }
 }

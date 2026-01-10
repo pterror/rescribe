@@ -410,7 +410,7 @@ fn escape_attr(text: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rescribe_std::helpers;
+    use crate::builder::html;
 
     fn emit_str(doc: &Document) -> String {
         let result = emit(doc).unwrap();
@@ -419,96 +419,64 @@ mod tests {
 
     #[test]
     fn test_emit_paragraph() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello, world!",
-            )])]));
-
-        let html = emit_str(&doc);
-        assert_eq!(html, "<p>Hello, world!</p>");
+        let doc = html(|d| d.p(|i| i.text("Hello, world!")));
+        let output = emit_str(&doc);
+        assert_eq!(output, "<p>Hello, world!</p>");
     }
 
     #[test]
     fn test_emit_heading() {
-        let doc = Document::new().with_content(helpers::document([helpers::heading(
-            2,
-            [helpers::text("Title")],
-        )]));
-
-        let html = emit_str(&doc);
-        assert_eq!(html, "<h2>Title</h2>");
+        let doc = html(|d| d.h2(|i| i.text("Title")));
+        let output = emit_str(&doc);
+        assert_eq!(output, "<h2>Title</h2>");
     }
 
     #[test]
     fn test_emit_emphasis() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::emphasis([helpers::text("italic")]),
-        ])]));
-
-        let html = emit_str(&doc);
-        assert_eq!(html, "<p><em>italic</em></p>");
+        let doc = html(|d| d.p(|i| i.em(|i| i.text("italic"))));
+        let output = emit_str(&doc);
+        assert_eq!(output, "<p><em>italic</em></p>");
     }
 
     #[test]
     fn test_emit_link() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::link(
-                "https://example.com",
-                [helpers::text("link")],
-            )])]));
-
-        let html = emit_str(&doc);
-        assert_eq!(html, "<p><a href=\"https://example.com\">link</a></p>");
+        let doc = html(|d| d.p(|i| i.a("https://example.com", |i| i.text("link"))));
+        let output = emit_str(&doc);
+        assert_eq!(output, "<p><a href=\"https://example.com\">link</a></p>");
     }
 
     #[test]
     fn test_emit_code_block() {
-        let doc = Document::new().with_content(helpers::document([helpers::code_block(
-            "fn main() {}",
-            Some("rust"),
-        )]));
-
-        let html = emit_str(&doc);
+        let doc = html(|d| d.pre_lang("rust", "fn main() {}"));
+        let output = emit_str(&doc);
         assert_eq!(
-            html,
+            output,
             "<pre><code class=\"language-rust\">fn main() {}</code></pre>"
         );
     }
 
     #[test]
     fn test_emit_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("item 2")])]),
-        ])]));
-
-        let html = emit_str(&doc);
-        assert!(html.contains("<ul>"));
-        assert!(html.contains("<li>"));
-        assert!(html.contains("item 1"));
-        assert!(html.contains("item 2"));
+        let doc = html(|d| d.ul(|l| l.li(|i| i.text("item 1")).li(|i| i.text("item 2"))));
+        let output = emit_str(&doc);
+        assert!(output.contains("<ul>"));
+        assert!(output.contains("<li>"));
+        assert!(output.contains("item 1"));
+        assert!(output.contains("item 2"));
     }
 
     #[test]
     fn test_emit_image() {
-        let doc = Document::new().with_content(helpers::document([helpers::image(
-            "test.png",
-            "Test image",
-        )]));
-
-        let html = emit_str(&doc);
-        assert_eq!(html, "<img src=\"test.png\" alt=\"Test image\">");
+        let doc = html(|d| d.p(|i| i.img("test.png", "Test image")));
+        let output = emit_str(&doc);
+        assert!(output.contains("<img src=\"test.png\" alt=\"Test image\">"));
     }
 
     #[test]
     fn test_escape_html() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "<script>alert('xss')</script>",
-            )])]));
-
-        let html = emit_str(&doc);
-        assert!(html.contains("&lt;script&gt;"));
-        assert!(!html.contains("<script>"));
+        let doc = html(|d| d.p(|i| i.text("<script>alert('xss')</script>")));
+        let output = emit_str(&doc);
+        assert!(output.contains("&lt;script&gt;"));
+        assert!(!output.contains("<script>"));
     }
 }

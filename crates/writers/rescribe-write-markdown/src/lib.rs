@@ -485,7 +485,7 @@ fn emit_math_display(node: &Node, ctx: &mut EmitContext) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rescribe_std::helpers;
+    use crate::builder::markdown;
 
     fn emit_str(doc: &Document) -> String {
         let result = emit(doc).unwrap();
@@ -494,68 +494,46 @@ mod tests {
 
     #[test]
     fn test_emit_paragraph() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::text(
-                "Hello, world!",
-            )])]));
-
-        let md = emit_str(&doc);
-        assert_eq!(md, "Hello, world!\n");
+        let doc = markdown(|d| d.para(|i| i.text("Hello, world!")));
+        let output = emit_str(&doc);
+        assert_eq!(output, "Hello, world!\n");
     }
 
     #[test]
     fn test_emit_heading() {
-        let doc = Document::new().with_content(helpers::document([helpers::heading(
-            2,
-            [helpers::text("Title")],
-        )]));
-
-        let md = emit_str(&doc);
-        assert_eq!(md, "## Title\n");
+        let doc = markdown(|d| d.h2(|i| i.text("Title")));
+        let output = emit_str(&doc);
+        assert_eq!(output, "## Title\n");
     }
 
     #[test]
     fn test_emit_emphasis() {
-        let doc = Document::new().with_content(helpers::document([helpers::paragraph([
-            helpers::emphasis([helpers::text("italic")]),
-        ])]));
-
-        let md = emit_str(&doc);
-        assert_eq!(md, "*italic*\n");
+        let doc = markdown(|d| d.para(|i| i.em(|i| i.text("italic"))));
+        let output = emit_str(&doc);
+        assert_eq!(output, "*italic*\n");
     }
 
     #[test]
     fn test_emit_link() {
-        let doc =
-            Document::new().with_content(helpers::document([helpers::paragraph([helpers::link(
-                "https://example.com",
-                [helpers::text("link")],
-            )])]));
-
-        let md = emit_str(&doc);
-        assert_eq!(md, "[link](https://example.com)\n");
+        let doc = markdown(|d| d.para(|i| i.link("https://example.com", |i| i.text("link"))));
+        let output = emit_str(&doc);
+        assert_eq!(output, "[link](https://example.com)\n");
     }
 
     #[test]
     fn test_emit_code_block() {
-        let doc = Document::new().with_content(helpers::document([helpers::code_block(
-            "fn main() {}",
-            Some("rust"),
-        )]));
-
-        let md = emit_str(&doc);
-        assert_eq!(md, "```rust\nfn main() {}\n```\n");
+        let doc = markdown(|d| d.code_block_lang("rust", "fn main() {}"));
+        let output = emit_str(&doc);
+        assert_eq!(output, "```rust\nfn main() {}\n```\n");
     }
 
     #[test]
     fn test_emit_list() {
-        let doc = Document::new().with_content(helpers::document([helpers::bullet_list([
-            helpers::list_item([helpers::paragraph([helpers::text("item 1")])]),
-            helpers::list_item([helpers::paragraph([helpers::text("item 2")])]),
-        ])]));
-
-        let md = emit_str(&doc);
-        assert!(md.contains("- item 1"));
-        assert!(md.contains("- item 2"));
+        let doc = markdown(|d| {
+            d.bullet_list(|l| l.item(|i| i.text("item 1")).item(|i| i.text("item 2")))
+        });
+        let output = emit_str(&doc);
+        assert!(output.contains("- item 1"));
+        assert!(output.contains("- item 2"));
     }
 }
