@@ -47,3 +47,10 @@ rescribe-write-html = { workspace = true, optional = true }
 rescribe-write-latex = { workspace = true, optional = true }
 rescribe-write-org = { workspace = true, optional = true }
 rescribe-write-plaintext = { workspace = true, optional = true }
+
+[dev-dependencies]
+rescribe-read-markdown = { workspace = true }
+rescribe-read-html = { workspace = true }
+rescribe-write-markdown = { workspace = true }
+rescribe-write-html = { workspace = true }
+rescribe-std = { workspace = true }

@@ -1,0 +1,98 @@
+[package]
+name = "rescribe-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1", features = ["derive"] }
+
+[dependencies.rescribe-read-markdown]
+path = "../crates/readers/rescribe-read-markdown"
+
+[dependencies.rescribe-read-html]
+path = "../crates/readers/rescribe-read-html"
+
+[dependencies.rescribe-read-latex]
+path = "../crates/readers/rescribe-read-latex"
+
+[dependencies.rescribe-read-org]
+path = "../crates/readers/rescribe-read-org"
+
+[dependencies.rescribe-read-pdf]
+path = "../crates/readers/rescribe-read-pdf"
+
+[dependencies.rescribe-read-pandoc-json]
+path = "../crates/readers/rescribe-read-pandoc-json"
+
+[dependencies.rescribe-write-markdown]
+path = "../crates/writers/rescribe-write-markdown"
+
+[dependencies.rescribe-write-html]
+path = "../crates/writers/rescribe-write-html"
+
+[dependencies.rescribe-core]
+path = "../crates/rescribe-core"
+
+[dependencies.rescribe-std]
+path = "../crates/nodes/rescribe-std"
+
+[[bin]]
+name = "fuzz_markdown_reader"
+path = "fuzz_targets/markdown_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_html_reader"
+path = "fuzz_targets/html_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_latex_reader"
+path = "fuzz_targets/latex_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_org_reader"
+path = "fuzz_targets/org_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_pdf_reader"
+path = "fuzz_targets/pdf_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_pandoc_json_reader"
+path = "fuzz_targets/pandoc_json_reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_markdown_roundtrip"
+path = "fuzz_targets/markdown_roundtrip.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_html_roundtrip"
+path = "fuzz_targets/html_roundtrip.rs"
+test = false
+doc = false
+bench = false
