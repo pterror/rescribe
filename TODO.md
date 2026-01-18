@@ -41,3 +41,4 @@
 - [x] Pandoc JSON compatibility layer (`rescribe-read-pandoc-json`, `rescribe-write-pandoc-json`)
 - [ ] DOCX reader/writer - **BLOCKED**: waiting on `ooxml` crate (see ~/git/ooxml)
 - [x] PDF reader (text extraction via pdf-extract, with fidelity warnings about structural loss)
+- [x] Comprehensive testing strategy documented (see TESTING.md)
