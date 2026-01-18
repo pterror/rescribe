@@ -220,7 +220,7 @@ impl<'a> Converter<'a> {
             "block_quote" => self.convert_blockquote(tsnode),
             "list" => self.convert_list(tsnode),
             "list_item" => self.convert_list_item(tsnode),
-            "thematic_break" => Some(self.with_span(Node::new(node::HORIZONTAL_RULE), tsnode)),
+            "thematic_break" => self.convert_thematic_break(tsnode),
             "html_block" => self.convert_html_block(tsnode),
 
             // Inline node in block tree - get inline tree and process
@@ -360,20 +360,35 @@ impl<'a> Converter<'a> {
 
             "emphasis" => {
                 let children = self.process_inline_children(tsnode, offset);
-                Some(self.with_inline_span(
-                    Node::new(node::EMPHASIS).children(children),
-                    tsnode,
-                    offset,
-                ))
+                let mut em = Node::new(node::EMPHASIS).children(children);
+
+                if self.preserve_spans {
+                    // Detect marker type (* or _)
+                    let text = self.inline_text(tsnode, offset);
+                    if let Some(c) = text.chars().next()
+                        && (c == '*' || c == '_')
+                    {
+                        em = em.prop(prop::MD_EMPHASIS_MARKER, c.to_string());
+                    }
+                }
+
+                Some(self.with_inline_span(em, tsnode, offset))
             }
 
             "strong_emphasis" => {
                 let children = self.process_inline_children(tsnode, offset);
-                Some(self.with_inline_span(
-                    Node::new(node::STRONG).children(children),
-                    tsnode,
-                    offset,
-                ))
+                let mut strong = Node::new(node::STRONG).children(children);
+
+                if self.preserve_spans {
+                    // Detect marker type (** or __)
+                    let text = self.inline_text(tsnode, offset);
+                    let marker: String = text.chars().take(2).collect();
+                    if marker == "**" || marker == "__" {
+                        strong = strong.prop(prop::MD_STRONG_MARKER, marker);
+                    }
+                }
+
+                Some(self.with_inline_span(strong, tsnode, offset))
             }
 
             "strikethrough" => {
@@ -583,6 +598,7 @@ impl<'a> Converter<'a> {
     fn convert_heading(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
         let mut level = 1i64;
         let mut content_nodes = Vec::new();
+        let mut is_setext = false;
 
         let mut cursor = tsnode.walk();
         for child in tsnode.children(&mut cursor) {
@@ -596,8 +612,14 @@ impl<'a> Converter<'a> {
                 "heading_content" | "inline" => {
                     content_nodes.extend(self.convert_inline_from_block(&child));
                 }
-                "setext_h1_underline" => level = 1,
-                "setext_h2_underline" => level = 2,
+                "setext_h1_underline" => {
+                    level = 1;
+                    is_setext = true;
+                }
+                "setext_h2_underline" => {
+                    level = 2;
+                    is_setext = true;
+                }
                 "paragraph" => {
                     // Setext heading content is in a paragraph
                     let mut para_cursor = child.walk();
@@ -611,14 +633,16 @@ impl<'a> Converter<'a> {
             }
         }
 
-        Some(
-            self.with_span(
-                Node::new(node::HEADING)
-                    .prop(prop::LEVEL, level)
-                    .children(content_nodes),
-                tsnode,
-            ),
-        )
+        let mut heading = Node::new(node::HEADING)
+            .prop(prop::LEVEL, level)
+            .children(content_nodes);
+
+        if self.preserve_spans {
+            let style = if is_setext { "setext" } else { "atx" };
+            heading = heading.prop(prop::MD_HEADING_STYLE, style);
+        }
+
+        Some(self.with_span(heading, tsnode))
     }
 
     fn convert_paragraph(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
@@ -638,6 +662,8 @@ impl<'a> Converter<'a> {
     fn convert_fenced_code(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
         let mut language = String::new();
         let mut content = String::new();
+        let mut fence_char: Option<char> = None;
+        let mut fence_length: Option<i64> = None;
 
         let mut cursor = tsnode.walk();
         for child in tsnode.children(&mut cursor) {
@@ -647,6 +673,13 @@ impl<'a> Converter<'a> {
                 }
                 "code_fence_content" => {
                     content = self.node_text(&child).to_string();
+                }
+                "fenced_code_block_delimiter" => {
+                    let delimiter = self.node_text(&child);
+                    if let Some(c) = delimiter.chars().next() {
+                        fence_char = Some(c);
+                        fence_length = Some(delimiter.len() as i64);
+                    }
                 }
                 _ => {}
             }
@@ -660,6 +693,15 @@ impl<'a> Converter<'a> {
         let mut node = Node::new(node::CODE_BLOCK).prop(prop::CONTENT, content);
         if !language.is_empty() {
             node = node.prop(prop::LANGUAGE, language);
+        }
+
+        if self.preserve_spans {
+            if let Some(c) = fence_char {
+                node = node.prop(prop::MD_FENCE_CHAR, c.to_string());
+            }
+            if let Some(len) = fence_length {
+                node = node.prop(prop::MD_FENCE_LENGTH, len);
+            }
         }
 
         Some(self.with_span(node, tsnode))
@@ -688,6 +730,7 @@ impl<'a> Converter<'a> {
     fn convert_list(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
         // Determine if ordered by checking first list item marker
         let mut ordered = false;
+        let mut list_marker: Option<char> = None;
         let mut cursor = tsnode.walk();
         for child in tsnode.children(&mut cursor) {
             if child.kind() == "list_item" {
@@ -695,15 +738,22 @@ impl<'a> Converter<'a> {
                 let mut item_cursor = child.walk();
                 if let Some(item_child) = child.children(&mut item_cursor).next() {
                     let marker_kind = item_child.kind();
+                    let marker_text = self.node_text(&item_child);
                     if marker_kind.contains("dot") || marker_kind.contains("paren") {
                         // Check if it starts with a digit
-                        let marker_text = self.node_text(&item_child);
                         if marker_text
                             .chars()
                             .next()
                             .is_some_and(|c| c.is_ascii_digit())
                         {
                             ordered = true;
+                        }
+                    } else {
+                        // Unordered list - capture the marker character
+                        if let Some(c) = marker_text.chars().next()
+                            && (c == '-' || c == '*' || c == '+')
+                        {
+                            list_marker = Some(c);
                         }
                     }
                 }
@@ -712,19 +762,37 @@ impl<'a> Converter<'a> {
         }
 
         let children = self.convert_block_children(tsnode);
-        Some(
-            self.with_span(
-                Node::new(node::LIST)
-                    .prop(prop::ORDERED, ordered)
-                    .children(children),
-                tsnode,
-            ),
-        )
+        let mut list = Node::new(node::LIST)
+            .prop(prop::ORDERED, ordered)
+            .children(children);
+
+        if self.preserve_spans
+            && !ordered
+            && let Some(marker) = list_marker
+        {
+            list = list.prop(prop::MD_LIST_MARKER, marker.to_string());
+        }
+
+        Some(self.with_span(list, tsnode))
     }
 
     fn convert_list_item(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
         let children = self.convert_block_children(tsnode);
         Some(self.with_span(Node::new(node::LIST_ITEM).children(children), tsnode))
+    }
+
+    fn convert_thematic_break(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
+        let mut hr = Node::new(node::HORIZONTAL_RULE);
+
+        if self.preserve_spans {
+            // Extract the character used for the thematic break
+            let text = self.node_text(tsnode).trim();
+            if let Some(c) = text.chars().find(|c| *c == '-' || *c == '*' || *c == '_') {
+                hr = hr.prop(prop::MD_BREAK_CHAR, c.to_string());
+            }
+        }
+
+        Some(self.with_span(hr, tsnode))
     }
 
     fn convert_html_block(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {

@@ -168,6 +168,26 @@ pub mod prop {
     pub const LATEX_PREFIX: &str = "latex:";
     /// DOCX-specific properties prefix.
     pub const DOCX_PREFIX: &str = "docx:";
+    /// Markdown-specific properties prefix.
+    pub const MD_PREFIX: &str = "md:";
+
+    // Source info properties (for preserve_source_info / use_source_info)
+    // These capture original formatting style from source documents.
+
+    /// Markdown heading style: "atx" (# Heading) or "setext" (underlined).
+    pub const MD_HEADING_STYLE: &str = "md:heading_style";
+    /// Markdown emphasis marker: "*" or "_".
+    pub const MD_EMPHASIS_MARKER: &str = "md:emphasis_marker";
+    /// Markdown strong marker: "**" or "__".
+    pub const MD_STRONG_MARKER: &str = "md:strong_marker";
+    /// Markdown unordered list marker: "-", "*", or "+".
+    pub const MD_LIST_MARKER: &str = "md:list_marker";
+    /// Markdown code fence character: "`" or "~".
+    pub const MD_FENCE_CHAR: &str = "md:fence_char";
+    /// Markdown code fence length (3 or more).
+    pub const MD_FENCE_LENGTH: &str = "md:fence_length";
+    /// Markdown thematic break character: "-", "*", or "_".
+    pub const MD_BREAK_CHAR: &str = "md:break_char";
 }
 
 #[cfg(test)]

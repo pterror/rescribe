@@ -18,9 +18,9 @@ pub fn emit(doc: &Document) -> Result<ConversionResult<Vec<u8>>, EmitError> {
 /// Emit a document as Markdown with custom options.
 pub fn emit_with_options(
     doc: &Document,
-    _options: &EmitOptions,
+    options: &EmitOptions,
 ) -> Result<ConversionResult<Vec<u8>>, EmitError> {
-    let mut ctx = EmitContext::new();
+    let mut ctx = EmitContext::new(options.use_source_info);
 
     // Emit children of the root document node
     emit_nodes(&doc.content.children, &mut ctx);
@@ -38,15 +38,18 @@ struct EmitContext {
     warnings: Vec<FidelityWarning>,
     list_depth: usize,
     in_tight_list: bool,
+    /// Whether to use source formatting hints.
+    use_source_info: bool,
 }
 
 impl EmitContext {
-    fn new() -> Self {
+    fn new(use_source_info: bool) -> Self {
         Self {
             output: String::new(),
             warnings: Vec::new(),
             list_depth: 0,
             in_tight_list: false,
+            use_source_info,
         }
     }
 
@@ -111,7 +114,7 @@ fn emit_node(node: &Node, ctx: &mut EmitContext) {
         node::LIST => emit_list(node, ctx),
         node::LIST_ITEM => emit_list_item(node, ctx),
         node::TABLE => emit_table(node, ctx),
-        node::HORIZONTAL_RULE => emit_horizontal_rule(ctx),
+        node::HORIZONTAL_RULE => emit_horizontal_rule(node, ctx),
         node::TEXT => emit_text(node, ctx),
         node::EMPHASIS => emit_emphasis(node, ctx),
         node::STRONG => emit_strong(node, ctx),
@@ -147,31 +150,75 @@ fn emit_paragraph(node: &Node, ctx: &mut EmitContext) {
 
 fn emit_heading(node: &Node, ctx: &mut EmitContext) {
     let level = node.props.get_int(prop::LEVEL).unwrap_or(1) as usize;
-    let hashes = "#".repeat(level.min(6));
-    ctx.write(&hashes);
-    ctx.write(" ");
-    emit_nodes(&node.children, ctx);
-    ctx.newline();
+
+    // Check for setext style preference (only works for level 1 and 2)
+    let use_setext = ctx.use_source_info
+        && level <= 2
+        && node.props.get_str(prop::MD_HEADING_STYLE) == Some("setext");
+
+    if use_setext {
+        // Emit content first
+        let mut content_ctx = EmitContext::new(ctx.use_source_info);
+        emit_nodes(&node.children, &mut content_ctx);
+        let content = content_ctx.output.trim_end();
+        ctx.write(content);
+        ctx.newline();
+
+        // Emit underline
+        let underline_char = if level == 1 { "=" } else { "-" };
+        let underline_len = content.len().max(3);
+        ctx.write(&underline_char.repeat(underline_len));
+        ctx.newline();
+    } else {
+        // ATX style
+        let hashes = "#".repeat(level.min(6));
+        ctx.write(&hashes);
+        ctx.write(" ");
+        emit_nodes(&node.children, ctx);
+        ctx.newline();
+    }
 }
 
 fn emit_code_block(node: &Node, ctx: &mut EmitContext) {
     let lang = node.props.get_str(prop::LANGUAGE).unwrap_or("");
     let content = node.props.get_str(prop::CONTENT).unwrap_or("");
 
-    ctx.write("```");
+    // Get fence character and length from source info
+    let fence_char = if ctx.use_source_info {
+        node.props
+            .get_str(prop::MD_FENCE_CHAR)
+            .and_then(|s| s.chars().next())
+            .unwrap_or('`')
+    } else {
+        '`'
+    };
+
+    let fence_length = if ctx.use_source_info {
+        node.props
+            .get_int(prop::MD_FENCE_LENGTH)
+            .map(|n| n as usize)
+            .unwrap_or(3)
+            .max(3)
+    } else {
+        3
+    };
+
+    let fence: String = std::iter::repeat_n(fence_char, fence_length).collect();
+
+    ctx.write(&fence);
     ctx.write(lang);
     ctx.newline();
     ctx.write(content);
     if !content.ends_with('\n') {
         ctx.newline();
     }
-    ctx.write("```");
+    ctx.write(&fence);
     ctx.newline();
 }
 
 fn emit_blockquote(node: &Node, ctx: &mut EmitContext) {
     // Emit children line by line, prefixing with >
-    let mut inner_ctx = EmitContext::new();
+    let mut inner_ctx = EmitContext::new(ctx.use_source_info);
     emit_nodes(&node.children, &mut inner_ctx);
 
     for line in inner_ctx.output.lines() {
@@ -186,6 +233,16 @@ fn emit_list(node: &Node, ctx: &mut EmitContext) {
     let start = node.props.get_int(prop::START).unwrap_or(1) as usize;
     let tight = node.props.get_bool(prop::TIGHT).unwrap_or(true);
 
+    // Get list marker from source info for unordered lists
+    let list_marker = if ctx.use_source_info && !ordered {
+        node.props
+            .get_str(prop::MD_LIST_MARKER)
+            .and_then(|s| s.chars().next())
+            .unwrap_or('-')
+    } else {
+        '-'
+    };
+
     ctx.list_depth += 1;
     let old_tight = ctx.in_tight_list;
     ctx.in_tight_list = tight;
@@ -197,7 +254,7 @@ fn emit_list(node: &Node, ctx: &mut EmitContext) {
         if ordered {
             ctx.write(&format!("{}. ", start + i));
         } else {
-            ctx.write("- ");
+            ctx.write(&format!("{} ", list_marker));
         }
 
         // Emit list item content
@@ -250,19 +307,19 @@ fn emit_table(node: &Node, ctx: &mut EmitContext) {
         match child.kind.as_str() {
             node::TABLE_HEAD => {
                 for row in &child.children {
-                    let cells = collect_row_cells(row);
+                    let cells = collect_row_cells(row, ctx.use_source_info);
                     update_col_widths(&cells, &mut col_widths);
                     rows.push(cells);
                 }
             }
             node::TABLE_ROW => {
-                let cells = collect_row_cells(child);
+                let cells = collect_row_cells(child, ctx.use_source_info);
                 update_col_widths(&cells, &mut col_widths);
                 rows.push(cells);
             }
             node::TABLE_BODY => {
                 for row in &child.children {
-                    let cells = collect_row_cells(row);
+                    let cells = collect_row_cells(row, ctx.use_source_info);
                     update_col_widths(&cells, &mut col_widths);
                     rows.push(cells);
                 }
@@ -290,11 +347,11 @@ fn emit_table(node: &Node, ctx: &mut EmitContext) {
     }
 }
 
-fn collect_row_cells(row: &Node) -> Vec<String> {
+fn collect_row_cells(row: &Node, use_source_info: bool) -> Vec<String> {
     row.children
         .iter()
         .map(|cell| {
-            let mut cell_ctx = EmitContext::new();
+            let mut cell_ctx = EmitContext::new(use_source_info);
             emit_nodes(&cell.children, &mut cell_ctx);
             cell_ctx.output.trim().to_string()
         })
@@ -321,8 +378,19 @@ fn emit_table_row(cells: &[String], widths: &[usize], ctx: &mut EmitContext) {
     ctx.newline();
 }
 
-fn emit_horizontal_rule(ctx: &mut EmitContext) {
-    ctx.write("---");
+fn emit_horizontal_rule(node: &Node, ctx: &mut EmitContext) {
+    // Get break character from source info
+    let break_char = if ctx.use_source_info {
+        node.props
+            .get_str(prop::MD_BREAK_CHAR)
+            .and_then(|s| s.chars().next())
+            .unwrap_or('-')
+    } else {
+        '-'
+    };
+
+    let rule: String = std::iter::repeat_n(break_char, 3).collect();
+    ctx.write(&rule);
     ctx.newline();
 }
 
@@ -360,15 +428,32 @@ fn escape_markdown(text: &str) -> String {
 }
 
 fn emit_emphasis(node: &Node, ctx: &mut EmitContext) {
-    ctx.write("*");
+    // Get emphasis marker from source info
+    let marker = if ctx.use_source_info {
+        node.props
+            .get_str(prop::MD_EMPHASIS_MARKER)
+            .and_then(|s| s.chars().next())
+            .unwrap_or('*')
+    } else {
+        '*'
+    };
+
+    ctx.write(&marker.to_string());
     emit_nodes(&node.children, ctx);
-    ctx.write("*");
+    ctx.write(&marker.to_string());
 }
 
 fn emit_strong(node: &Node, ctx: &mut EmitContext) {
-    ctx.write("**");
+    // Get strong marker from source info
+    let marker = if ctx.use_source_info {
+        node.props.get_str(prop::MD_STRONG_MARKER).unwrap_or("**")
+    } else {
+        "**"
+    };
+
+    ctx.write(marker);
     emit_nodes(&node.children, ctx);
-    ctx.write("**");
+    ctx.write(marker);
 }
 
 fn emit_strikeout(node: &Node, ctx: &mut EmitContext) {
@@ -535,5 +620,132 @@ mod tests {
         let output = emit_str(&doc);
         assert!(output.contains("- item 1"));
         assert!(output.contains("- item 2"));
+    }
+}
+
+#[cfg(test)]
+mod roundtrip_tests {
+    use rescribe_core::{EmitOptions, ParseOptions};
+    use rescribe_read_markdown::parse_with_options as md_parse;
+
+    use super::*;
+
+    fn roundtrip(input: &str) -> String {
+        let parse_opts = ParseOptions {
+            preserve_source_info: true,
+            ..Default::default()
+        };
+        let emit_opts = EmitOptions {
+            use_source_info: true,
+            ..Default::default()
+        };
+
+        let doc = md_parse(input, &parse_opts).unwrap().value;
+        let result = emit_with_options(&doc, &emit_opts).unwrap();
+        String::from_utf8(result.value).unwrap()
+    }
+
+    #[test]
+    fn test_roundtrip_atx_heading() {
+        let input = "# Heading 1\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_setext_heading() {
+        let input = "Heading 1\n=========\n";
+        let output = roundtrip(input);
+        assert!(output.contains("Heading 1\n"));
+        assert!(output.contains("==="));
+    }
+
+    #[test]
+    fn test_roundtrip_emphasis_asterisk() {
+        let input = "*italic*\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_emphasis_underscore() {
+        let input = "_italic_\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_strong_asterisk() {
+        let input = "**bold**\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_strong_underscore() {
+        let input = "__bold__\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_list_dash() {
+        let input = "- item 1\n- item 2\n";
+        let output = roundtrip(input);
+        assert!(output.contains("- item 1"));
+        assert!(output.contains("- item 2"));
+    }
+
+    #[test]
+    fn test_roundtrip_list_asterisk() {
+        let input = "* item 1\n* item 2\n";
+        let output = roundtrip(input);
+        assert!(output.contains("* item 1"));
+        assert!(output.contains("* item 2"));
+    }
+
+    #[test]
+    fn test_roundtrip_list_plus() {
+        let input = "+ item 1\n+ item 2\n";
+        let output = roundtrip(input);
+        assert!(output.contains("+ item 1"));
+        assert!(output.contains("+ item 2"));
+    }
+
+    #[test]
+    fn test_roundtrip_code_fence_backtick() {
+        let input = "```rust\nfn main() {}\n```\n";
+        let output = roundtrip(input);
+        assert!(output.starts_with("```"));
+        assert!(output.contains("fn main()"));
+    }
+
+    #[test]
+    fn test_roundtrip_code_fence_tilde() {
+        let input = "~~~rust\nfn main() {}\n~~~\n";
+        let output = roundtrip(input);
+        assert!(output.starts_with("~~~"));
+        assert!(output.contains("fn main()"));
+    }
+
+    #[test]
+    fn test_roundtrip_hr_dash() {
+        let input = "---\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_hr_asterisk() {
+        let input = "***\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_hr_underscore() {
+        let input = "___\n";
+        let output = roundtrip(input);
+        assert_eq!(output, input);
     }
 }

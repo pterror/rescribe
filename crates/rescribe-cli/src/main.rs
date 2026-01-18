@@ -1,7 +1,7 @@
 //! Rescribe CLI - Universal document converter.
 
 use clap::{Parser, Subcommand};
-use rescribe::{Document, html, latex, markdown, org, plaintext};
+use rescribe::{Document, html, latex, markdown, org, pdf, plaintext};
 use std::fs;
 use std::io::{self, Read, Write};
 use std::path::PathBuf;
@@ -45,6 +45,7 @@ enum Format {
     Latex,
     Org,
     Plaintext,
+    Pdf,
 }
 
 impl Format {
@@ -55,6 +56,7 @@ impl Format {
             "tex" | "latex" => Some(Format::Latex),
             "org" => Some(Format::Org),
             "txt" | "text" => Some(Format::Plaintext),
+            "pdf" => Some(Format::Pdf),
             _ => None,
         }
     }
@@ -66,6 +68,7 @@ impl Format {
             Format::Latex => "latex",
             Format::Org => "org",
             Format::Plaintext => "plaintext",
+            Format::Pdf => "pdf",
         }
     }
 
@@ -76,15 +79,20 @@ impl Format {
             Format::Latex => &["tex", "latex"],
             Format::Org => &["org"],
             Format::Plaintext => &["txt", "text"],
+            Format::Pdf => &["pdf"],
         }
     }
 
     fn can_read(&self) -> bool {
-        matches!(self, Format::Markdown | Format::Html)
+        matches!(self, Format::Markdown | Format::Html | Format::Pdf)
     }
 
     fn can_write(&self) -> bool {
-        true // All formats can be written
+        !matches!(self, Format::Pdf) // PDF has no writer
+    }
+
+    fn is_binary(&self) -> bool {
+        matches!(self, Format::Pdf)
     }
 }
 
@@ -154,17 +162,26 @@ fn convert(
         })
         .ok_or("Cannot determine output format. Use --to to specify.")?;
 
-    // Read input
-    let input_text = if input.as_os_str() == "-" {
-        let mut buf = String::new();
-        io::stdin().read_to_string(&mut buf)?;
-        buf
+    // Read input (binary for PDF, text for others)
+    let doc = if input_format.is_binary() {
+        let input_bytes = if input.as_os_str() == "-" {
+            let mut buf = Vec::new();
+            io::stdin().read_to_end(&mut buf)?;
+            buf
+        } else {
+            fs::read(&input)?
+        };
+        parse_binary(&input_bytes, input_format)?
     } else {
-        fs::read_to_string(&input)?
+        let input_text = if input.as_os_str() == "-" {
+            let mut buf = String::new();
+            io::stdin().read_to_string(&mut buf)?;
+            buf
+        } else {
+            fs::read_to_string(&input)?
+        };
+        parse_text(&input_text, input_format)?
     };
-
-    // Parse
-    let doc = parse(&input_text, input_format)?;
 
     // Emit
     let output_bytes = emit(&doc, output_format)?;
@@ -182,12 +199,28 @@ fn convert(
     Ok(())
 }
 
-fn parse(input: &str, format: Format) -> Result<Document, Box<dyn std::error::Error>> {
+fn parse_text(input: &str, format: Format) -> Result<Document, Box<dyn std::error::Error>> {
     let result = match format {
         Format::Markdown => markdown::parse(input)?,
         Format::Html => html::parse(input)?,
-        Format::Latex | Format::Org | Format::Plaintext => {
-            return Err(format!("No reader for {} format", format.name()).into());
+        Format::Latex | Format::Org | Format::Plaintext | Format::Pdf => {
+            return Err(format!("No text reader for {} format", format.name()).into());
+        }
+    };
+
+    // Report warnings to stderr
+    for warning in &result.warnings {
+        eprintln!("warning: {}", warning.message);
+    }
+
+    Ok(result.value)
+}
+
+fn parse_binary(input: &[u8], format: Format) -> Result<Document, Box<dyn std::error::Error>> {
+    let result = match format {
+        Format::Pdf => pdf::parse(input)?,
+        _ => {
+            return Err(format!("No binary reader for {} format", format.name()).into());
         }
     };
 
@@ -206,6 +239,9 @@ fn emit(doc: &Document, format: Format) -> Result<Vec<u8>, Box<dyn std::error::E
         Format::Latex => latex::emit(doc)?,
         Format::Org => org::emit(doc)?,
         Format::Plaintext => plaintext::emit(doc)?,
+        Format::Pdf => {
+            return Err("PDF writer is not available (PDF is read-only)".into());
+        }
     };
 
     // Report warnings to stderr
@@ -227,6 +263,7 @@ fn list_formats() {
         Format::Latex,
         Format::Org,
         Format::Plaintext,
+        Format::Pdf,
     ];
 
     for fmt in formats {

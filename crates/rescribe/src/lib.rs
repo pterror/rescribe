@@ -116,6 +116,13 @@ pub mod plaintext {
     pub use rescribe_write_plaintext::emit_with_options;
 }
 
+/// PDF format support (reader only).
+#[cfg(feature = "pdf")]
+pub mod pdf {
+    pub use rescribe_read_pdf::parse;
+    pub use rescribe_read_pdf::parse_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

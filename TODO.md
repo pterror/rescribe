@@ -22,22 +22,22 @@
 
 ## Priority 2: Options
 
-- [ ] **Implement ParseOptions**
+- [x] **Implement ParseOptions**
   - [x] `embed_resources`: Actually embed images/resources
-  - [ ] `preserve_source_info`: Track source spans
+  - [x] `preserve_source_info`: Track source spans and formatting style hints
 
-- [ ] **Implement EmitOptions**
+- [x] **Implement EmitOptions**
   - [x] `pretty`: Pretty-print output (HTML writer)
-  - [ ] `use_source_info`: Use original formatting hints
+  - [x] `use_source_info`: Use original formatting hints (heading style, markers, fences)
 
 ## Priority 3: Additional Readers
 
 - [x] **LaTeX reader** (basic support for sections, lists, verbatim, math)
-- [ ] **Org-mode reader** (currently write-only)
+- [x] **Org-mode reader** (handwritten parser with headings, lists, emphasis, code blocks, metadata)
 
 ## Future
 
-- [ ] Transforms crate (`rescribe-transforms`)
-- [ ] DOCX reader/writer
-- [ ] PDF reader
-- [ ] Pandoc JSON compatibility layer
+- [x] Transforms crate (`rescribe-transforms`) - ShiftHeadings, StripEmpty, MergeText, UnwrapSingleChild, Pipeline
+- [x] Pandoc JSON compatibility layer (`rescribe-read-pandoc-json`, `rescribe-write-pandoc-json`)
+- [ ] DOCX reader/writer - **BLOCKED**: waiting on `ooxml` crate (see ~/git/ooxml)
+- [x] PDF reader (text extraction via pdf-extract, with fidelity warnings about structural loss)

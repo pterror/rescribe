@@ -6,7 +6,7 @@ members = [
     "crates/nodes/*",
     "crates/readers/*",
     "crates/writers/*",
-    # "crates/rescribe-transforms",
+    "crates/rescribe-transforms",
     "crates/rescribe-cli",
 ]
 
@@ -30,6 +30,10 @@ rescribe-write-html = { path = "crates/writers/rescribe-write-html" }
 rescribe-write-plaintext = { path = "crates/writers/rescribe-write-plaintext" }
 rescribe-write-latex = { path = "crates/writers/rescribe-write-latex" }
 rescribe-write-org = { path = "crates/writers/rescribe-write-org" }
+rescribe-read-pandoc-json = { path = "crates/readers/rescribe-read-pandoc-json" }
+rescribe-read-pdf = { path = "crates/readers/rescribe-read-pdf" }
+rescribe-write-pandoc-json = { path = "crates/writers/rescribe-write-pandoc-json" }
+rescribe-transforms = { path = "crates/rescribe-transforms" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
@@ -43,3 +47,4 @@ serde_yaml = "0.9"
 pulldown-cmark = "0.12"
 html5ever = "0.36"
 markup5ever_rcdom = "0.36"
+pdf-extract = "0.10"

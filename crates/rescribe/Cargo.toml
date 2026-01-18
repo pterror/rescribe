@@ -21,9 +21,10 @@ html = ["dep:rescribe-read-html", "dep:rescribe-write-html"]
 latex = ["dep:rescribe-read-latex", "dep:rescribe-write-latex"]
 org = ["dep:rescribe-read-org", "dep:rescribe-write-org"]
 plaintext = ["dep:rescribe-write-plaintext"]
+pdf = ["dep:rescribe-read-pdf"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf"]
 
 [dependencies]
 # Core is always included
@@ -38,6 +39,7 @@ rescribe-read-markdown = { workspace = true, optional = true }
 rescribe-read-html = { workspace = true, optional = true }
 rescribe-read-latex = { workspace = true, optional = true }
 rescribe-read-org = { workspace = true, optional = true }
+rescribe-read-pdf = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
