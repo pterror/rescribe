@@ -39,9 +39,10 @@ ansi = ["dep:rescribe-write-ansi"]
 dokuwiki = ["dep:rescribe-read-dokuwiki", "dep:rescribe-write-dokuwiki"]
 jats = ["dep:rescribe-read-jats", "dep:rescribe-write-jats"]
 tei = ["dep:rescribe-read-tei", "dep:rescribe-write-tei"]
+man = ["dep:rescribe-read-man", "dep:rescribe-write-man"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man"]
 
 [dependencies]
 # Core is always included
@@ -73,6 +74,7 @@ rescribe-read-typst = { workspace = true, optional = true }
 rescribe-read-dokuwiki = { workspace = true, optional = true }
 rescribe-read-jats = { workspace = true, optional = true }
 rescribe-read-tei = { workspace = true, optional = true }
+rescribe-read-man = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -96,6 +98,7 @@ rescribe-write-ansi = { workspace = true, optional = true }
 rescribe-write-dokuwiki = { workspace = true, optional = true }
 rescribe-write-jats = { workspace = true, optional = true }
 rescribe-write-tei = { workspace = true, optional = true }
+rescribe-write-man = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

@@ -67,6 +67,8 @@ rescribe-read-jats = { path = "crates/readers/rescribe-read-jats" }
 rescribe-write-jats = { path = "crates/writers/rescribe-write-jats" }
 rescribe-read-tei = { path = "crates/readers/rescribe-read-tei" }
 rescribe-write-tei = { path = "crates/writers/rescribe-write-tei" }
+rescribe-read-man = { path = "crates/readers/rescribe-read-man" }
+rescribe-write-man = { path = "crates/writers/rescribe-write-man" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

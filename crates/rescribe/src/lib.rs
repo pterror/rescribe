@@ -258,6 +258,14 @@ pub mod tei {
     pub use rescribe_write_tei::emit;
 }
 
+/// Man page (roff/troff) format support.
+#[cfg(feature = "man")]
+pub mod man {
+    pub use rescribe_read_man::parse;
+    pub use rescribe_write_man::emit;
+    pub use rescribe_write_man::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
