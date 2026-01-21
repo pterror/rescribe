@@ -65,6 +65,8 @@ rescribe-read-dokuwiki = { path = "crates/readers/rescribe-read-dokuwiki" }
 rescribe-write-dokuwiki = { path = "crates/writers/rescribe-write-dokuwiki" }
 rescribe-read-jats = { path = "crates/readers/rescribe-read-jats" }
 rescribe-write-jats = { path = "crates/writers/rescribe-write-jats" }
+rescribe-read-tei = { path = "crates/readers/rescribe-read-tei" }
+rescribe-write-tei = { path = "crates/writers/rescribe-write-tei" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

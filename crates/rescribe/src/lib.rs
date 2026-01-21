@@ -251,6 +251,13 @@ pub mod jats {
     pub use rescribe_write_jats::emit;
 }
 
+/// TEI (Text Encoding Initiative) format support.
+#[cfg(feature = "tei")]
+pub mod tei {
+    pub use rescribe_read_tei::parse;
+    pub use rescribe_write_tei::emit;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
