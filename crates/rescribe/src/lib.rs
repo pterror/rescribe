@@ -338,6 +338,15 @@ pub mod vimwiki {
     pub use rescribe_write_vimwiki::emit_with_options;
 }
 
+/// ZimWiki (Zim Desktop Wiki) format support.
+#[cfg(feature = "zimwiki")]
+pub mod zimwiki {
+    pub use rescribe_read_zimwiki::parse;
+    pub use rescribe_read_zimwiki::parse_with_options;
+    pub use rescribe_write_zimwiki::emit;
+    pub use rescribe_write_zimwiki::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
