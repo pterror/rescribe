@@ -90,3 +90,17 @@ When working autonomously:
 4. Progress from simple formats to complex: markdown → HTML → others
 5. Keep this file updated with architecture changes
 6. Don't stop early - continue until blocked or todo list exhausted
+
+## Commit Convention
+
+Use conventional commits: `type(scope): message`
+
+Types:
+- `feat` - New feature
+- `fix` - Bug fix
+- `refactor` - Code change that neither fixes a bug nor adds a feature
+- `docs` - Documentation only
+- `chore` - Maintenance (deps, CI, etc.)
+- `test` - Adding or updating tests
+
+Scope is optional but recommended for multi-crate repos.
