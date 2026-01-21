@@ -275,6 +275,15 @@ pub mod jira {
     pub use rescribe_write_jira::emit_with_options;
 }
 
+/// Creole wiki markup format support.
+#[cfg(feature = "creole")]
+pub mod creole {
+    pub use rescribe_read_creole::parse;
+    pub use rescribe_read_creole::parse_with_options;
+    pub use rescribe_write_creole::emit;
+    pub use rescribe_write_creole::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

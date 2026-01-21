@@ -41,9 +41,10 @@ jats = ["dep:rescribe-read-jats", "dep:rescribe-write-jats"]
 tei = ["dep:rescribe-read-tei", "dep:rescribe-write-tei"]
 man = ["dep:rescribe-read-man", "dep:rescribe-write-man"]
 jira = ["dep:rescribe-read-jira", "dep:rescribe-write-jira"]
+creole = ["dep:rescribe-read-creole", "dep:rescribe-write-creole"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole"]
 
 [dependencies]
 # Core is always included
@@ -77,6 +78,7 @@ rescribe-read-jats = { workspace = true, optional = true }
 rescribe-read-tei = { workspace = true, optional = true }
 rescribe-read-man = { workspace = true, optional = true }
 rescribe-read-jira = { workspace = true, optional = true }
+rescribe-read-creole = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -102,6 +104,7 @@ rescribe-write-jats = { workspace = true, optional = true }
 rescribe-write-tei = { workspace = true, optional = true }
 rescribe-write-man = { workspace = true, optional = true }
 rescribe-write-jira = { workspace = true, optional = true }
+rescribe-write-creole = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }
