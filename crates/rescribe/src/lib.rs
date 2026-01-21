@@ -329,6 +329,15 @@ pub mod rtf {
     pub use rescribe_write_rtf::emit_with_options;
 }
 
+/// VimWiki format support.
+#[cfg(feature = "vimwiki")]
+pub mod vimwiki {
+    pub use rescribe_read_vimwiki::parse;
+    pub use rescribe_read_vimwiki::parse_with_options;
+    pub use rescribe_write_vimwiki::emit;
+    pub use rescribe_write_vimwiki::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

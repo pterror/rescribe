@@ -63,7 +63,7 @@ Various wiki markup languages.
 | TWiki | - | - | Low | |
 | XWiki | - | - | Low | |
 | ZimWiki | - | - | Low | Desktop wiki |
-| VimWiki | - | - | Low | Vim plugin format |
+| VimWiki | ✅ | ✅ | Low | Vim plugin format |
 
 ## Priority 4: Presentation Formats
 

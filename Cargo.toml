@@ -83,6 +83,8 @@ rescribe-read-t2t = { path = "crates/readers/rescribe-read-t2t" }
 rescribe-write-t2t = { path = "crates/writers/rescribe-write-t2t" }
 rescribe-read-rtf = { path = "crates/readers/rescribe-read-rtf" }
 rescribe-write-rtf = { path = "crates/writers/rescribe-write-rtf" }
+rescribe-read-vimwiki = { path = "crates/readers/rescribe-read-vimwiki" }
+rescribe-write-vimwiki = { path = "crates/writers/rescribe-write-vimwiki" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
