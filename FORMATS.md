@@ -24,8 +24,8 @@ Popular formats with significant user demand.
 | GFM (GitHub Markdown) | ✅ | ✅ | Low | Tables, task lists, strikethrough via pulldown-cmark |
 | EPUB | ✅ | ✅ | Medium | Via epub/epub-builder crates |
 | ODT (OpenDocument) | - | - | Medium | Similar to DOCX; can extend ooxml-opc |
-| reStructuredText | ✅ | - | Medium | Python ecosystem standard; handwritten parser |
-| AsciiDoc | ✅ | - | Medium | Popular in technical docs; handwritten parser |
+| reStructuredText | ✅ | ✅ | Medium | Python ecosystem standard; handwritten parser |
+| AsciiDoc | ✅ | ✅ | Medium | Popular in technical docs; handwritten parser |
 | RTF | - | - | Medium | Legacy but still common |
 | Typst | - | - | Medium | Modern LaTeX alternative, growing fast |
 | PPTX | - | - | Medium | Waiting on ooxml-pml |
@@ -40,7 +40,7 @@ Important for scholarly and technical writing.
 | DocBook | ✅ | ✅ | Medium | XML-based; well-specified |
 | JATS | - | - | Medium | Journal articles; XML-based |
 | TEI | - | - | Medium | Digital humanities; XML-based |
-| BibTeX/BibLaTeX | ✅ | - | Low | Via biblatex crate |
+| BibTeX/BibLaTeX | ✅ | ✅ | Low | Via biblatex crate |
 | CSL JSON | ✅ | ✅ | Low | Citation Style Language |
 | Jupyter (ipynb) | ✅ | ✅ | Low | JSON format; implemented |
 | man/mdoc | - | - | Medium | Unix manual pages |

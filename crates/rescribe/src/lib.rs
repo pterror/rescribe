@@ -180,10 +180,11 @@ pub mod mediawiki {
     pub use rescribe_write_mediawiki::emit;
 }
 
-/// BibTeX format support (reader only).
+/// BibTeX format support.
 #[cfg(feature = "bibtex")]
 pub mod bibtex {
     pub use rescribe_read_bibtex::parse;
+    pub use rescribe_write_bibtex::emit;
 }
 
 /// CSL JSON format support.
@@ -200,18 +201,22 @@ pub mod docbook {
     pub use rescribe_write_docbook::emit;
 }
 
-/// reStructuredText format support (reader only).
+/// reStructuredText format support.
 #[cfg(feature = "rst")]
 pub mod rst {
     pub use rescribe_read_rst::parse;
     pub use rescribe_read_rst::parse_with_options;
+    pub use rescribe_write_rst::emit;
+    pub use rescribe_write_rst::emit_with_options;
 }
 
-/// AsciiDoc format support (reader only).
+/// AsciiDoc format support.
 #[cfg(feature = "asciidoc")]
 pub mod asciidoc {
     pub use rescribe_read_asciidoc::parse;
     pub use rescribe_read_asciidoc::parse_with_options;
+    pub use rescribe_write_asciidoc::emit;
+    pub use rescribe_write_asciidoc::emit_with_options;
 }
 
 /// Common imports for typical usage.
