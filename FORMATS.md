@@ -55,7 +55,7 @@ Various wiki markup languages.
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
 | MediaWiki | ✅ | ✅ | Medium | Wikipedia syntax |
-| DokuWiki | - | - | Low | Simple wiki syntax |
+| DokuWiki | ✅ | ✅ | Low | Simple wiki syntax |
 | Jira | - | - | Low | Atlassian markup |
 | Creole | - | - | Low | Wiki standard |
 | Textile | - | - | Low | Ruby ecosystem |

@@ -235,6 +235,15 @@ pub mod ansi {
     pub use rescribe_write_ansi::emit_with_options;
 }
 
+/// DokuWiki format support.
+#[cfg(feature = "dokuwiki")]
+pub mod dokuwiki {
+    pub use rescribe_read_dokuwiki::parse;
+    pub use rescribe_read_dokuwiki::parse_with_options;
+    pub use rescribe_write_dokuwiki::emit;
+    pub use rescribe_write_dokuwiki::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
