@@ -1,0 +1,12 @@
+[package]
+name = "rescribe-write-jats"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "JATS XML writer for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+quick-xml.workspace = true

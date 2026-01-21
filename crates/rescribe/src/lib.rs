@@ -244,6 +244,13 @@ pub mod dokuwiki {
     pub use rescribe_write_dokuwiki::emit_with_options;
 }
 
+/// JATS (Journal Article Tag Suite) format support.
+#[cfg(feature = "jats")]
+pub mod jats {
+    pub use rescribe_read_jats::parse;
+    pub use rescribe_write_jats::emit;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

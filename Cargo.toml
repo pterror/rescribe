@@ -63,6 +63,8 @@ rescribe-write-typst = { path = "crates/writers/rescribe-write-typst" }
 rescribe-write-ansi = { path = "crates/writers/rescribe-write-ansi" }
 rescribe-read-dokuwiki = { path = "crates/readers/rescribe-read-dokuwiki" }
 rescribe-write-dokuwiki = { path = "crates/writers/rescribe-write-dokuwiki" }
+rescribe-read-jats = { path = "crates/readers/rescribe-read-jats" }
+rescribe-write-jats = { path = "crates/writers/rescribe-write-jats" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
@@ -78,3 +80,4 @@ pulldown-cmark = "0.12"
 html5ever = "0.36"
 markup5ever_rcdom = "0.36"
 pdf-extract = "0.10"
+quick-xml = "0.39"
