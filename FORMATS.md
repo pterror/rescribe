@@ -93,7 +93,7 @@ Lower priority but good for completeness.
 | Markua | - | - | Low | Leanpub format |
 | Djot | ✅ | ✅ | Low | Pandoc author's new format; via jotdown |
 | BITS | - | - | Medium | Book Interchange Tag Suite |
-| ANSI | - | - | Low | Terminal colored output |
+| ANSI | - | ✅ | Low | Terminal colored output |
 | BBCode variants | - | - | Low | Forum markup |
 
 ## Implementation Strategy

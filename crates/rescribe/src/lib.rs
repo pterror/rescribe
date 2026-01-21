@@ -228,6 +228,13 @@ pub mod typst {
     pub use rescribe_write_typst::emit_with_options;
 }
 
+/// ANSI terminal format support (writer only).
+#[cfg(feature = "ansi")]
+pub mod ansi {
+    pub use rescribe_write_ansi::emit;
+    pub use rescribe_write_ansi::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

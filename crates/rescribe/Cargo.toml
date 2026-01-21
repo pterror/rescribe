@@ -35,9 +35,10 @@ docbook = ["dep:rescribe-read-docbook", "dep:rescribe-write-docbook"]
 rst = ["dep:rescribe-read-rst", "dep:rescribe-write-rst"]
 asciidoc = ["dep:rescribe-read-asciidoc", "dep:rescribe-write-asciidoc"]
 typst = ["dep:rescribe-read-typst", "dep:rescribe-write-typst"]
+ansi = ["dep:rescribe-write-ansi"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi"]
 
 [dependencies]
 # Core is always included
@@ -85,6 +86,7 @@ rescribe-write-rst = { workspace = true, optional = true }
 rescribe-write-asciidoc = { workspace = true, optional = true }
 rescribe-write-bibtex = { workspace = true, optional = true }
 rescribe-write-typst = { workspace = true, optional = true }
+rescribe-write-ansi = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }
