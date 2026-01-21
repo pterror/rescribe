@@ -284,6 +284,15 @@ pub mod creole {
     pub use rescribe_write_creole::emit_with_options;
 }
 
+/// Textile markup format support.
+#[cfg(feature = "textile")]
+pub mod textile {
+    pub use rescribe_read_textile::parse;
+    pub use rescribe_read_textile::parse_with_options;
+    pub use rescribe_write_textile::emit;
+    pub use rescribe_write_textile::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

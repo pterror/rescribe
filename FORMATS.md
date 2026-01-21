@@ -58,7 +58,7 @@ Various wiki markup languages.
 | DokuWiki | ✅ | ✅ | Low | Simple wiki syntax |
 | Jira | ✅ | ✅ | Low | Atlassian markup |
 | Creole | ✅ | ✅ | Low | Wiki standard |
-| Textile | - | - | Low | Ruby ecosystem |
+| Textile | ✅ | ✅ | Low | Ruby ecosystem |
 | TikiWiki | - | - | Low | |
 | TWiki | - | - | Low | |
 | XWiki | - | - | Low | |
