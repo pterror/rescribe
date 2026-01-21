@@ -24,7 +24,7 @@ Popular formats with significant user demand.
 | GFM (GitHub Markdown) | ✅ | ✅ | Low | Tables, task lists, strikethrough via pulldown-cmark |
 | EPUB | ✅ | ✅ | Medium | Via epub/epub-builder crates |
 | ODT (OpenDocument) | - | - | Medium | Similar to DOCX; can extend ooxml-opc |
-| reStructuredText | - | - | Medium | Python ecosystem standard |
+| reStructuredText | ✅ | - | Medium | Python ecosystem standard; handwritten parser |
 | AsciiDoc | - | - | Medium | Popular in technical docs |
 | RTF | - | - | Medium | Legacy but still common |
 | Typst | - | - | Medium | Modern LaTeX alternative, growing fast |

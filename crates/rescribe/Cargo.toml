@@ -32,9 +32,10 @@ mediawiki = ["dep:rescribe-read-mediawiki", "dep:rescribe-write-mediawiki"]
 bibtex = ["dep:rescribe-read-bibtex"]
 csl-json = ["dep:rescribe-read-csl-json", "dep:rescribe-write-csl-json"]
 docbook = ["dep:rescribe-read-docbook", "dep:rescribe-write-docbook"]
+rst = ["dep:rescribe-read-rst"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst"]
 
 [dependencies]
 # Core is always included
@@ -60,6 +61,7 @@ rescribe-read-mediawiki = { workspace = true, optional = true }
 rescribe-read-bibtex = { workspace = true, optional = true }
 rescribe-read-csl-json = { workspace = true, optional = true }
 rescribe-read-docbook = { workspace = true, optional = true }
+rescribe-read-rst = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }

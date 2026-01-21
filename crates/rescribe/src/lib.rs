@@ -200,6 +200,13 @@ pub mod docbook {
     pub use rescribe_write_docbook::emit;
 }
 
+/// reStructuredText format support (reader only).
+#[cfg(feature = "rst")]
+pub mod rst {
+    pub use rescribe_read_rst::parse;
+    pub use rescribe_read_rst::parse_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
