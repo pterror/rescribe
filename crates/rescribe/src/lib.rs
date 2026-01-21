@@ -302,6 +302,15 @@ pub mod haddock {
     pub use rescribe_write_haddock::emit_with_options;
 }
 
+/// Muse (Emacs Muse) format support.
+#[cfg(feature = "muse")]
+pub mod muse {
+    pub use rescribe_read_muse::parse;
+    pub use rescribe_read_muse::parse_with_options;
+    pub use rescribe_write_muse::emit;
+    pub use rescribe_write_muse::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

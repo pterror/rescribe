@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-muse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Muse markup writer for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
