@@ -320,6 +320,15 @@ pub mod t2t {
     pub use rescribe_write_t2t::emit_with_options;
 }
 
+/// RTF (Rich Text Format) support.
+#[cfg(feature = "rtf")]
+pub mod rtf {
+    pub use rescribe_read_rtf::parse;
+    pub use rescribe_read_rtf::parse_with_options;
+    pub use rescribe_write_rtf::emit;
+    pub use rescribe_write_rtf::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

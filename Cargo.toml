@@ -81,6 +81,8 @@ rescribe-read-muse = { path = "crates/readers/rescribe-read-muse" }
 rescribe-write-muse = { path = "crates/writers/rescribe-write-muse" }
 rescribe-read-t2t = { path = "crates/readers/rescribe-read-t2t" }
 rescribe-write-t2t = { path = "crates/writers/rescribe-write-t2t" }
+rescribe-read-rtf = { path = "crates/readers/rescribe-read-rtf" }
+rescribe-write-rtf = { path = "crates/writers/rescribe-write-rtf" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

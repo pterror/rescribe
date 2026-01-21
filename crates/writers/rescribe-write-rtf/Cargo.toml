@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-rtf"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "RTF (Rich Text Format) writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
