@@ -1,0 +1,12 @@
+[package]
+name = "rescribe-write-docbook"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "DocBook writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
+quick-xml = "0.39"

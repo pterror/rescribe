@@ -193,6 +193,13 @@ pub mod csl_json {
     pub use rescribe_write_csl_json::emit;
 }
 
+/// DocBook format support.
+#[cfg(feature = "docbook")]
+pub mod docbook {
+    pub use rescribe_read_docbook::parse;
+    pub use rescribe_write_docbook::emit;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

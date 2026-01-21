@@ -37,7 +37,7 @@ Important for scholarly and technical writing.
 
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
-| DocBook | - | - | Medium | XML-based; well-specified |
+| DocBook | ✅ | ✅ | Medium | XML-based; well-specified |
 | JATS | - | - | Medium | Journal articles; XML-based |
 | TEI | - | - | Medium | Digital humanities; XML-based |
 | BibTeX/BibLaTeX | ✅ | - | Low | Via biblatex crate |
