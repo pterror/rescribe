@@ -126,6 +126,8 @@ pub mod prop {
     pub const LIST_STYLE: &str = "list_style";
     /// Tight list (no paragraph wrapping).
     pub const TIGHT: &str = "tight";
+    /// Task list item checked state.
+    pub const CHECKED: &str = "checked";
     /// Format for raw blocks/inlines.
     pub const FORMAT: &str = "format";
     /// Quote type (single, double).

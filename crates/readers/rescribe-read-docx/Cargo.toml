@@ -1,0 +1,14 @@
+[package]
+name = "rescribe-read-docx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "DOCX (Word) reader for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+ooxml-wml.workspace = true
+
+[dev-dependencies]

@@ -778,7 +778,23 @@ impl<'a> Converter<'a> {
 
     fn convert_list_item(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {
         let children = self.convert_block_children(tsnode);
-        Some(self.with_span(Node::new(node::LIST_ITEM).children(children), tsnode))
+        let mut item = Node::new(node::LIST_ITEM).children(children);
+
+        // Check for task list checkbox
+        let mut cursor = tsnode.walk();
+        for child in tsnode.children(&mut cursor) {
+            let kind = child.kind();
+            // tree-sitter-md uses "task_list_marker_checked" and "task_list_marker_unchecked"
+            if kind == "task_list_marker_checked" {
+                item = item.prop(prop::CHECKED, true);
+                break;
+            } else if kind == "task_list_marker_unchecked" {
+                item = item.prop(prop::CHECKED, false);
+                break;
+            }
+        }
+
+        Some(self.with_span(item, tsnode))
     }
 
     fn convert_thematic_break(&mut self, tsnode: &tree_sitter::Node) -> Option<Node> {

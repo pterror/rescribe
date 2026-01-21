@@ -1,0 +1,12 @@
+[package]
+name = "rescribe-read-xlsx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "XLSX (Excel) reader for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+ooxml-sml = { path = "../../../../ooxml/crates/ooxml-sml" }

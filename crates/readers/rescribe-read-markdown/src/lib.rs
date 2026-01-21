@@ -196,4 +196,24 @@ Content here."#;
         let children = root_children(&doc);
         assert!(children[0].span.is_none());
     }
+
+    #[test]
+    fn test_parse_task_list() {
+        let result = parse("- [ ] unchecked\n- [x] checked").unwrap();
+        let doc = result.value;
+        let children = root_children(&doc);
+        let list = &children[0];
+        assert_eq!(list.kind.as_str(), node::LIST);
+        assert_eq!(list.children.len(), 2);
+
+        // First item should be unchecked
+        let item1 = &list.children[0];
+        assert_eq!(item1.kind.as_str(), node::LIST_ITEM);
+        assert_eq!(item1.props.get_bool(prop::CHECKED), Some(false));
+
+        // Second item should be checked
+        let item2 = &list.children[1];
+        assert_eq!(item2.kind.as_str(), node::LIST_ITEM);
+        assert_eq!(item2.props.get_bool(prop::CHECKED), Some(true));
+    }
 }

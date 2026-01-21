@@ -1,7 +1,10 @@
 //! Rescribe CLI - Universal document converter.
 
 use clap::{Parser, Subcommand};
-use rescribe::{Document, html, latex, markdown, org, pdf, plaintext};
+use rescribe::{
+    Document, djot, docx, epub, html, ipynb, latex, markdown, mediawiki, opml, org, pdf, plaintext,
+    xlsx,
+};
 use std::fs;
 use std::io::{self, Read, Write};
 use std::path::PathBuf;
@@ -46,6 +49,13 @@ enum Format {
     Org,
     Plaintext,
     Pdf,
+    Docx,
+    Ipynb,
+    Xlsx,
+    Epub,
+    Djot,
+    Opml,
+    Mediawiki,
 }
 
 impl Format {
@@ -57,6 +67,13 @@ impl Format {
             "org" => Some(Format::Org),
             "txt" | "text" => Some(Format::Plaintext),
             "pdf" => Some(Format::Pdf),
+            "docx" => Some(Format::Docx),
+            "ipynb" => Some(Format::Ipynb),
+            "xlsx" => Some(Format::Xlsx),
+            "epub" => Some(Format::Epub),
+            "dj" | "djot" => Some(Format::Djot),
+            "opml" => Some(Format::Opml),
+            "mediawiki" | "wiki" => Some(Format::Mediawiki),
             _ => None,
         }
     }
@@ -69,6 +86,13 @@ impl Format {
             Format::Org => "org",
             Format::Plaintext => "plaintext",
             Format::Pdf => "pdf",
+            Format::Docx => "docx",
+            Format::Ipynb => "ipynb",
+            Format::Xlsx => "xlsx",
+            Format::Epub => "epub",
+            Format::Djot => "djot",
+            Format::Opml => "opml",
+            Format::Mediawiki => "mediawiki",
         }
     }
 
@@ -80,19 +104,41 @@ impl Format {
             Format::Org => &["org"],
             Format::Plaintext => &["txt", "text"],
             Format::Pdf => &["pdf"],
+            Format::Docx => &["docx"],
+            Format::Ipynb => &["ipynb"],
+            Format::Xlsx => &["xlsx"],
+            Format::Epub => &["epub"],
+            Format::Djot => &["dj", "djot"],
+            Format::Opml => &["opml"],
+            Format::Mediawiki => &["mediawiki", "wiki"],
         }
     }
 
     fn can_read(&self) -> bool {
-        matches!(self, Format::Markdown | Format::Html | Format::Pdf)
+        matches!(
+            self,
+            Format::Markdown
+                | Format::Html
+                | Format::Pdf
+                | Format::Docx
+                | Format::Ipynb
+                | Format::Xlsx
+                | Format::Epub
+                | Format::Djot
+                | Format::Opml
+                | Format::Mediawiki
+        )
     }
 
     fn can_write(&self) -> bool {
-        !matches!(self, Format::Pdf) // PDF has no writer
+        !matches!(self, Format::Pdf | Format::Xlsx) // PDF and XLSX have no writer
     }
 
     fn is_binary(&self) -> bool {
-        matches!(self, Format::Pdf)
+        matches!(
+            self,
+            Format::Pdf | Format::Docx | Format::Xlsx | Format::Epub
+        )
     }
 }
 
@@ -203,7 +249,17 @@ fn parse_text(input: &str, format: Format) -> Result<Document, Box<dyn std::erro
     let result = match format {
         Format::Markdown => markdown::parse(input)?,
         Format::Html => html::parse(input)?,
-        Format::Latex | Format::Org | Format::Plaintext | Format::Pdf => {
+        Format::Ipynb => ipynb::parse(input)?,
+        Format::Djot => djot::parse(input)?,
+        Format::Opml => opml::parse(input)?,
+        Format::Mediawiki => mediawiki::parse(input)?,
+        Format::Latex
+        | Format::Org
+        | Format::Plaintext
+        | Format::Pdf
+        | Format::Docx
+        | Format::Xlsx
+        | Format::Epub => {
             return Err(format!("No text reader for {} format", format.name()).into());
         }
     };
@@ -219,6 +275,9 @@ fn parse_text(input: &str, format: Format) -> Result<Document, Box<dyn std::erro
 fn parse_binary(input: &[u8], format: Format) -> Result<Document, Box<dyn std::error::Error>> {
     let result = match format {
         Format::Pdf => pdf::parse(input)?,
+        Format::Docx => docx::parse_bytes(input)?,
+        Format::Xlsx => xlsx::parse_bytes(input)?,
+        Format::Epub => epub::parse_bytes(input)?,
         _ => {
             return Err(format!("No binary reader for {} format", format.name()).into());
         }
@@ -239,8 +298,17 @@ fn emit(doc: &Document, format: Format) -> Result<Vec<u8>, Box<dyn std::error::E
         Format::Latex => latex::emit(doc)?,
         Format::Org => org::emit(doc)?,
         Format::Plaintext => plaintext::emit(doc)?,
+        Format::Docx => docx::emit(doc)?,
+        Format::Ipynb => ipynb::emit(doc)?,
+        Format::Epub => epub::emit(doc)?,
+        Format::Djot => djot::emit(doc)?,
+        Format::Opml => opml::emit(doc)?,
+        Format::Mediawiki => mediawiki::emit(doc)?,
         Format::Pdf => {
             return Err("PDF writer is not available (PDF is read-only)".into());
+        }
+        Format::Xlsx => {
+            return Err("XLSX writer is not available (XLSX is read-only)".into());
         }
     };
 
@@ -264,6 +332,13 @@ fn list_formats() {
         Format::Org,
         Format::Plaintext,
         Format::Pdf,
+        Format::Docx,
+        Format::Ipynb,
+        Format::Xlsx,
+        Format::Epub,
+        Format::Djot,
+        Format::Opml,
+        Format::Mediawiki,
     ];
 
     for fmt in formats {

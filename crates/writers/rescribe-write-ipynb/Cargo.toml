@@ -1,0 +1,15 @@
+[package]
+name = "rescribe-write-ipynb"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Jupyter notebook writer for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+rescribe-write-markdown.workspace = true
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.22"

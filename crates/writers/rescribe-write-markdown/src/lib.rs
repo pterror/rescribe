@@ -274,6 +274,15 @@ fn emit_list_item(node: &Node, ctx: &mut EmitContext) {
 }
 
 fn emit_list_item_content(node: &Node, ctx: &mut EmitContext) {
+    // Emit task list marker if present
+    if let Some(checked) = node.props.get_bool(prop::CHECKED) {
+        if checked {
+            ctx.write("[x] ");
+        } else {
+            ctx.write("[ ] ");
+        }
+    }
+
     // For tight lists, emit inline content; for loose lists, emit blocks
     if ctx.in_tight_list && node.children.len() == 1 {
         // Tight list item - emit paragraph content inline
@@ -747,5 +756,13 @@ mod roundtrip_tests {
         let input = "___\n";
         let output = roundtrip(input);
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_roundtrip_task_list() {
+        let input = "- [ ] unchecked\n- [x] checked\n";
+        let output = roundtrip(input);
+        assert!(output.contains("[ ] unchecked"));
+        assert!(output.contains("[x] checked"));
     }
 }

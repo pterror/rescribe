@@ -35,11 +35,25 @@ rescribe-read-pandoc-json = { path = "crates/readers/rescribe-read-pandoc-json" 
 rescribe-read-pdf = { path = "crates/readers/rescribe-read-pdf" }
 rescribe-write-pandoc-json = { path = "crates/writers/rescribe-write-pandoc-json" }
 rescribe-transforms = { path = "crates/rescribe-transforms" }
+rescribe-read-docx = { path = "crates/readers/rescribe-read-docx" }
+rescribe-write-docx = { path = "crates/writers/rescribe-write-docx" }
+rescribe-read-ipynb = { path = "crates/readers/rescribe-read-ipynb" }
+rescribe-write-ipynb = { path = "crates/writers/rescribe-write-ipynb" }
+rescribe-read-xlsx = { path = "crates/readers/rescribe-read-xlsx" }
+rescribe-read-epub = { path = "crates/readers/rescribe-read-epub" }
+rescribe-write-epub = { path = "crates/writers/rescribe-write-epub" }
+rescribe-read-djot = { path = "crates/readers/rescribe-read-djot" }
+rescribe-write-djot = { path = "crates/writers/rescribe-write-djot" }
+rescribe-read-opml = { path = "crates/readers/rescribe-read-opml" }
+rescribe-write-opml = { path = "crates/writers/rescribe-write-opml" }
+rescribe-read-mediawiki = { path = "crates/readers/rescribe-read-mediawiki" }
+rescribe-write-mediawiki = { path = "crates/writers/rescribe-write-mediawiki" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
 
 # External dependencies
+ooxml-wml = { path = "../ooxml/crates/ooxml-wml" }
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }

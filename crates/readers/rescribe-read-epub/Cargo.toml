@@ -1,0 +1,13 @@
+[package]
+name = "rescribe-read-epub"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "EPUB reader for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+rescribe-read-html.workspace = true
+epub = "2"

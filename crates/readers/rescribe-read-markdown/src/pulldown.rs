@@ -24,13 +24,14 @@ pub fn parse_with_options(
     let mut warnings = Vec::new();
     let mut metadata = Properties::new();
 
-    // Enable common extensions
+    // Enable common extensions including full GFM support
     let mut opts = Options::empty();
     opts.insert(Options::ENABLE_TABLES);
     opts.insert(Options::ENABLE_FOOTNOTES);
     opts.insert(Options::ENABLE_STRIKETHROUGH);
     opts.insert(Options::ENABLE_TASKLISTS);
     opts.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
+    opts.insert(Options::ENABLE_GFM); // GitHub-style blockquotes like [!NOTE]
 
     let parser = Parser::new_ext(input, opts);
     // Collect events with source ranges for span tracking
@@ -151,12 +152,8 @@ fn parse_event(
             (Some(with_span(node, range, preserve_spans)), 1)
         }
         Event::TaskListMarker(_checked) => {
-            // This modifies the list item; we'll handle it in list item parsing
-            warnings.push(FidelityWarning::new(
-                Severity::Minor,
-                WarningKind::FeatureLost("task_list".to_string()),
-                "Task list markers are partially supported",
-            ));
+            // Task list markers are handled in list item parsing (parse_tag for Tag::Item)
+            // This branch should rarely be reached since we process them there
             (None, 1)
         }
         Event::InlineMath(math) => {
@@ -261,11 +258,22 @@ fn parse_tag(
             Some(with_span(list, &tag_range, preserve_spans))
         }
 
-        Tag::Item => Some(with_span(
-            Node::new(node::LIST_ITEM).children(children),
-            &tag_range,
-            preserve_spans,
-        )),
+        Tag::Item => {
+            // Check for task list marker in inner events
+            let task_checked = inner_events.iter().find_map(|(event, _)| {
+                if let Event::TaskListMarker(checked) = event {
+                    Some(*checked)
+                } else {
+                    None
+                }
+            });
+
+            let mut item = Node::new(node::LIST_ITEM).children(children);
+            if let Some(checked) = task_checked {
+                item = item.prop(prop::CHECKED, checked);
+            }
+            Some(with_span(item, &tag_range, preserve_spans))
+        }
 
         Tag::FootnoteDefinition(label) => Some(with_span(
             Node::new(node::FOOTNOTE_DEF)

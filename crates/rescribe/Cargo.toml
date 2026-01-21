@@ -22,9 +22,16 @@ latex = ["dep:rescribe-read-latex", "dep:rescribe-write-latex"]
 org = ["dep:rescribe-read-org", "dep:rescribe-write-org"]
 plaintext = ["dep:rescribe-write-plaintext"]
 pdf = ["dep:rescribe-read-pdf"]
+docx = ["dep:rescribe-read-docx", "dep:rescribe-write-docx"]
+ipynb = ["dep:rescribe-read-ipynb", "dep:rescribe-write-ipynb"]
+xlsx = ["dep:rescribe-read-xlsx"]
+epub = ["dep:rescribe-read-epub", "dep:rescribe-write-epub"]
+djot = ["dep:rescribe-read-djot", "dep:rescribe-write-djot"]
+opml = ["dep:rescribe-read-opml", "dep:rescribe-write-opml"]
+mediawiki = ["dep:rescribe-read-mediawiki", "dep:rescribe-write-mediawiki"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki"]
 
 [dependencies]
 # Core is always included
@@ -40,6 +47,13 @@ rescribe-read-html = { workspace = true, optional = true }
 rescribe-read-latex = { workspace = true, optional = true }
 rescribe-read-org = { workspace = true, optional = true }
 rescribe-read-pdf = { workspace = true, optional = true }
+rescribe-read-docx = { workspace = true, optional = true }
+rescribe-read-ipynb = { workspace = true, optional = true }
+rescribe-read-xlsx = { workspace = true, optional = true }
+rescribe-read-epub = { workspace = true, optional = true }
+rescribe-read-djot = { workspace = true, optional = true }
+rescribe-read-opml = { workspace = true, optional = true }
+rescribe-read-mediawiki = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -47,6 +61,12 @@ rescribe-write-html = { workspace = true, optional = true }
 rescribe-write-latex = { workspace = true, optional = true }
 rescribe-write-org = { workspace = true, optional = true }
 rescribe-write-plaintext = { workspace = true, optional = true }
+rescribe-write-docx = { workspace = true, optional = true }
+rescribe-write-ipynb = { workspace = true, optional = true }
+rescribe-write-epub = { workspace = true, optional = true }
+rescribe-write-djot = { workspace = true, optional = true }
+rescribe-write-opml = { workspace = true, optional = true }
+rescribe-write-mediawiki = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

@@ -31,6 +31,8 @@
 //! - `latex` - LaTeX reader/writer
 //! - `org` - Org-mode reader/writer
 //! - `plaintext` - Plain text writer
+//! - `pdf` - PDF reader
+//! - `docx` - DOCX (Word) reader/writer
 //! - `std` - Standard node kinds (default)
 //! - `math` - Math node kinds
 //! - `all` - Enable all formats
@@ -121,6 +123,61 @@ pub mod plaintext {
 pub mod pdf {
     pub use rescribe_read_pdf::parse;
     pub use rescribe_read_pdf::parse_with_options;
+}
+
+/// DOCX (Word) format support.
+#[cfg(feature = "docx")]
+pub mod docx {
+    pub use rescribe_read_docx::parse;
+    pub use rescribe_read_docx::parse_bytes;
+    pub use rescribe_read_docx::parse_file;
+    pub use rescribe_write_docx::emit;
+}
+
+/// Jupyter notebook (ipynb) format support.
+#[cfg(feature = "ipynb")]
+pub mod ipynb {
+    pub use rescribe_read_ipynb::parse;
+    pub use rescribe_read_ipynb::parse_bytes;
+    pub use rescribe_write_ipynb::emit;
+}
+
+/// XLSX (Excel) format support (reader only).
+#[cfg(feature = "xlsx")]
+pub mod xlsx {
+    pub use rescribe_read_xlsx::parse;
+    pub use rescribe_read_xlsx::parse_bytes;
+    pub use rescribe_read_xlsx::parse_file;
+}
+
+/// EPUB format support.
+#[cfg(feature = "epub")]
+pub mod epub {
+    pub use rescribe_read_epub::parse;
+    pub use rescribe_read_epub::parse_bytes;
+    pub use rescribe_read_epub::parse_file;
+    pub use rescribe_write_epub::emit;
+}
+
+/// Djot format support.
+#[cfg(feature = "djot")]
+pub mod djot {
+    pub use rescribe_read_djot::parse;
+    pub use rescribe_write_djot::emit;
+}
+
+/// OPML format support.
+#[cfg(feature = "opml")]
+pub mod opml {
+    pub use rescribe_read_opml::parse;
+    pub use rescribe_write_opml::emit;
+}
+
+/// MediaWiki format support.
+#[cfg(feature = "mediawiki")]
+pub mod mediawiki {
+    pub use rescribe_read_mediawiki::parse;
+    pub use rescribe_write_mediawiki::emit;
 }
 
 /// Common imports for typical usage.

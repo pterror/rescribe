@@ -1,0 +1,12 @@
+[package]
+name = "rescribe-read-djot"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Djot reader for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
+jotdown = "0.9"

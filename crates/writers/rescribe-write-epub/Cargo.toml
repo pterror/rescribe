@@ -1,0 +1,13 @@
+[package]
+name = "rescribe-write-epub"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "EPUB writer for rescribe"
+
+[dependencies]
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+rescribe-write-html.workspace = true
+epub-builder = "0.8"
