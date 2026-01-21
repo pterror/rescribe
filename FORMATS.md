@@ -22,7 +22,7 @@ Popular formats with significant user demand.
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
 | GFM (GitHub Markdown) | ✅ | ✅ | Low | Tables, task lists, strikethrough via pulldown-cmark |
-| EPUB | - | - | Medium | ZIP container with XHTML; `epub` crate exists |
+| EPUB | ✅ | ✅ | Medium | Via epub/epub-builder crates |
 | ODT (OpenDocument) | - | - | Medium | Similar to DOCX; can extend ooxml-opc |
 | reStructuredText | - | - | Medium | Python ecosystem standard |
 | AsciiDoc | - | - | Medium | Popular in technical docs |
@@ -40,7 +40,7 @@ Important for scholarly and technical writing.
 | DocBook | - | - | Medium | XML-based; well-specified |
 | JATS | - | - | Medium | Journal articles; XML-based |
 | TEI | - | - | Medium | Digital humanities; XML-based |
-| BibTeX/BibLaTeX | - | - | Low | Bibliography format |
+| BibTeX/BibLaTeX | ✅ | - | Low | Via biblatex crate |
 | CSL JSON | - | - | Low | Citation Style Language |
 | Jupyter (ipynb) | ✅ | ✅ | Low | JSON format; implemented |
 | man/mdoc | - | - | Medium | Unix manual pages |
@@ -54,7 +54,7 @@ Various wiki markup languages.
 
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
-| MediaWiki | - | - | Medium | Wikipedia syntax |
+| MediaWiki | ✅ | ✅ | Medium | Wikipedia syntax |
 | DokuWiki | - | - | Low | Simple wiki syntax |
 | Jira | - | - | Low | Atlassian markup |
 | Creole | - | - | Low | Wiki standard |
@@ -84,14 +84,14 @@ Lower priority but good for completeness.
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
 | FB2 (FictionBook) | - | - | Medium | Russian ebook format |
-| OPML | - | - | Low | Outline format; XML |
+| OPML | ✅ | ✅ | Low | Outline format; via quick-xml |
 | Haddock | - | - | Low | Haskell docs |
 | Muse | - | - | Low | Emacs Muse |
 | t2t (txt2tags) | - | - | Low | |
 | pod | - | - | Low | Perl docs |
 | ICML | - | - | High | Adobe InCopy |
 | Markua | - | - | Low | Leanpub format |
-| Djot | - | - | Low | Pandoc author's new format |
+| Djot | ✅ | ✅ | Low | Pandoc author's new format; via jotdown |
 | BITS | - | - | Medium | Book Interchange Tag Suite |
 | ANSI | - | - | Low | Terminal colored output |
 | BBCode variants | - | - | Low | Forum markup |

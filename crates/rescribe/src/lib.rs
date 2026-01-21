@@ -180,6 +180,12 @@ pub mod mediawiki {
     pub use rescribe_write_mediawiki::emit;
 }
 
+/// BibTeX format support (reader only).
+#[cfg(feature = "bibtex")]
+pub mod bibtex {
+    pub use rescribe_read_bibtex::parse;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

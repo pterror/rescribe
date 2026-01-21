@@ -1,0 +1,9 @@
+[package]
+name = "rescribe-read-bibtex"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+biblatex = "0.11"
+rescribe-core = { path = "../../rescribe-core" }
+rescribe-std = { path = "../../nodes/rescribe-std" }
