@@ -1,0 +1,13 @@
+[package]
+name = "rescribe-write-fb2"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "FictionBook 2 (FB2) writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
+quick-xml = "0.39"
+base64 = "0.22"

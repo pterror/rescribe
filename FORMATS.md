@@ -83,7 +83,7 @@ Lower priority but good for completeness.
 
 | Format | Read | Write | Complexity | Notes |
 |--------|:----:|:-----:|:----------:|-------|
-| FB2 (FictionBook) | - | - | Medium | Russian ebook format |
+| FB2 (FictionBook) | ✅ | ✅ | Medium | Russian ebook format |
 | OPML | ✅ | ✅ | Low | Outline format; via quick-xml |
 | Haddock | ✅ | ✅ | Low | Haskell docs |
 | Muse | ✅ | ✅ | Low | Emacs Muse |

@@ -91,6 +91,8 @@ rescribe-read-pod = { path = "crates/readers/rescribe-read-pod" }
 rescribe-write-pod = { path = "crates/writers/rescribe-write-pod" }
 rescribe-read-markua = { path = "crates/readers/rescribe-read-markua" }
 rescribe-write-markua = { path = "crates/writers/rescribe-write-markua" }
+rescribe-read-fb2 = { path = "crates/readers/rescribe-read-fb2" }
+rescribe-write-fb2 = { path = "crates/writers/rescribe-write-fb2" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

@@ -365,6 +365,15 @@ pub mod markua {
     pub use rescribe_write_markua::emit_with_options;
 }
 
+/// FictionBook 2 (FB2) format support.
+#[cfg(feature = "fb2")]
+pub mod fb2 {
+    pub use rescribe_read_fb2::parse;
+    pub use rescribe_read_fb2::parse_with_options;
+    pub use rescribe_write_fb2::emit;
+    pub use rescribe_write_fb2::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

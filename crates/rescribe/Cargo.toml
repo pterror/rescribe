@@ -51,9 +51,10 @@ vimwiki = ["dep:rescribe-read-vimwiki", "dep:rescribe-write-vimwiki"]
 zimwiki = ["dep:rescribe-read-zimwiki", "dep:rescribe-write-zimwiki"]
 pod = ["dep:rescribe-read-pod", "dep:rescribe-write-pod"]
 markua = ["dep:rescribe-read-markua", "dep:rescribe-write-markua"]
+fb2 = ["dep:rescribe-read-fb2", "dep:rescribe-write-fb2"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua", "fb2"]
 
 [dependencies]
 # Core is always included
@@ -97,6 +98,7 @@ rescribe-read-vimwiki = { workspace = true, optional = true }
 rescribe-read-zimwiki = { workspace = true, optional = true }
 rescribe-read-pod = { workspace = true, optional = true }
 rescribe-read-markua = { workspace = true, optional = true }
+rescribe-read-fb2 = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -132,6 +134,7 @@ rescribe-write-vimwiki = { workspace = true, optional = true }
 rescribe-write-zimwiki = { workspace = true, optional = true }
 rescribe-write-pod = { workspace = true, optional = true }
 rescribe-write-markua = { workspace = true, optional = true }
+rescribe-write-fb2 = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }
