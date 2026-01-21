@@ -293,6 +293,15 @@ pub mod textile {
     pub use rescribe_write_textile::emit_with_options;
 }
 
+/// Haddock (Haskell documentation) format support.
+#[cfg(feature = "haddock")]
+pub mod haddock {
+    pub use rescribe_read_haddock::parse;
+    pub use rescribe_read_haddock::parse_with_options;
+    pub use rescribe_write_haddock::emit;
+    pub use rescribe_write_haddock::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

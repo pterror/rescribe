@@ -85,7 +85,7 @@ Lower priority but good for completeness.
 |--------|:----:|:-----:|:----------:|-------|
 | FB2 (FictionBook) | - | - | Medium | Russian ebook format |
 | OPML | ✅ | ✅ | Low | Outline format; via quick-xml |
-| Haddock | - | - | Low | Haskell docs |
+| Haddock | ✅ | ✅ | Low | Haskell docs |
 | Muse | - | - | Low | Emacs Muse |
 | t2t (txt2tags) | - | - | Low | |
 | pod | - | - | Low | Perl docs |
