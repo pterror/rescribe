@@ -49,6 +49,8 @@ rescribe-write-opml = { path = "crates/writers/rescribe-write-opml" }
 rescribe-read-mediawiki = { path = "crates/readers/rescribe-read-mediawiki" }
 rescribe-write-mediawiki = { path = "crates/writers/rescribe-write-mediawiki" }
 rescribe-read-bibtex = { path = "crates/readers/rescribe-read-bibtex" }
+rescribe-read-csl-json = { path = "crates/readers/rescribe-read-csl-json" }
+rescribe-write-csl-json = { path = "crates/writers/rescribe-write-csl-json" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

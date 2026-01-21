@@ -30,9 +30,10 @@ djot = ["dep:rescribe-read-djot", "dep:rescribe-write-djot"]
 opml = ["dep:rescribe-read-opml", "dep:rescribe-write-opml"]
 mediawiki = ["dep:rescribe-read-mediawiki", "dep:rescribe-write-mediawiki"]
 bibtex = ["dep:rescribe-read-bibtex"]
+csl-json = ["dep:rescribe-read-csl-json", "dep:rescribe-write-csl-json"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json"]
 
 [dependencies]
 # Core is always included
@@ -56,6 +57,7 @@ rescribe-read-djot = { workspace = true, optional = true }
 rescribe-read-opml = { workspace = true, optional = true }
 rescribe-read-mediawiki = { workspace = true, optional = true }
 rescribe-read-bibtex = { workspace = true, optional = true }
+rescribe-read-csl-json = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -69,6 +71,7 @@ rescribe-write-epub = { workspace = true, optional = true }
 rescribe-write-djot = { workspace = true, optional = true }
 rescribe-write-opml = { workspace = true, optional = true }
 rescribe-write-mediawiki = { workspace = true, optional = true }
+rescribe-write-csl-json = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

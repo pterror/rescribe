@@ -41,7 +41,7 @@ Important for scholarly and technical writing.
 | JATS | - | - | Medium | Journal articles; XML-based |
 | TEI | - | - | Medium | Digital humanities; XML-based |
 | BibTeX/BibLaTeX | ✅ | - | Low | Via biblatex crate |
-| CSL JSON | - | - | Low | Citation Style Language |
+| CSL JSON | ✅ | ✅ | Low | Citation Style Language |
 | Jupyter (ipynb) | ✅ | ✅ | Low | JSON format; implemented |
 | man/mdoc | - | - | Medium | Unix manual pages |
 | Texinfo | - | - | Medium | GNU documentation |

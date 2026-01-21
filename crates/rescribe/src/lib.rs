@@ -186,6 +186,13 @@ pub mod bibtex {
     pub use rescribe_read_bibtex::parse;
 }
 
+/// CSL JSON format support.
+#[cfg(feature = "csl-json")]
+pub mod csl_json {
+    pub use rescribe_read_csl_json::parse;
+    pub use rescribe_write_csl_json::emit;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
