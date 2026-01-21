@@ -25,7 +25,7 @@ Popular formats with significant user demand.
 | EPUB | ✅ | ✅ | Medium | Via epub/epub-builder crates |
 | ODT (OpenDocument) | - | - | Medium | Similar to DOCX; can extend ooxml-opc |
 | reStructuredText | ✅ | - | Medium | Python ecosystem standard; handwritten parser |
-| AsciiDoc | - | - | Medium | Popular in technical docs |
+| AsciiDoc | ✅ | - | Medium | Popular in technical docs; handwritten parser |
 | RTF | - | - | Medium | Legacy but still common |
 | Typst | - | - | Medium | Modern LaTeX alternative, growing fast |
 | PPTX | - | - | Medium | Waiting on ooxml-pml |
