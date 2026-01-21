@@ -90,7 +90,7 @@ Lower priority but good for completeness.
 | t2t (txt2tags) | ✅ | ✅ | Low | |
 | pod | ✅ | ✅ | Low | Perl docs |
 | ICML | - | - | High | Adobe InCopy |
-| Markua | - | - | Low | Leanpub format |
+| Markua | ✅ | ✅ | Low | Leanpub format |
 | Djot | ✅ | ✅ | Low | Pandoc author's new format; via jotdown |
 | BITS | - | - | Medium | Book Interchange Tag Suite |
 | ANSI | - | ✅ | Low | Terminal colored output |

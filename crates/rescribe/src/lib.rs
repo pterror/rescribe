@@ -356,6 +356,15 @@ pub mod pod {
     pub use rescribe_write_pod::emit_with_options;
 }
 
+/// Markua (Leanpub) format support.
+#[cfg(feature = "markua")]
+pub mod markua {
+    pub use rescribe_read_markua::parse;
+    pub use rescribe_read_markua::parse_with_options;
+    pub use rescribe_write_markua::emit;
+    pub use rescribe_write_markua::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

@@ -89,6 +89,8 @@ rescribe-read-zimwiki = { path = "crates/readers/rescribe-read-zimwiki" }
 rescribe-write-zimwiki = { path = "crates/writers/rescribe-write-zimwiki" }
 rescribe-read-pod = { path = "crates/readers/rescribe-read-pod" }
 rescribe-write-pod = { path = "crates/writers/rescribe-write-pod" }
+rescribe-read-markua = { path = "crates/readers/rescribe-read-markua" }
+rescribe-write-markua = { path = "crates/writers/rescribe-write-markua" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
