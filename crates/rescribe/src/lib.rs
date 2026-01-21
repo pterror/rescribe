@@ -347,6 +347,15 @@ pub mod zimwiki {
     pub use rescribe_write_zimwiki::emit_with_options;
 }
 
+/// POD (Plain Old Documentation) format support.
+#[cfg(feature = "pod")]
+pub mod pod {
+    pub use rescribe_read_pod::parse;
+    pub use rescribe_read_pod::parse_with_options;
+    pub use rescribe_write_pod::emit;
+    pub use rescribe_write_pod::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

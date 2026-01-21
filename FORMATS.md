@@ -88,7 +88,7 @@ Lower priority but good for completeness.
 | Haddock | ✅ | ✅ | Low | Haskell docs |
 | Muse | ✅ | ✅ | Low | Emacs Muse |
 | t2t (txt2tags) | ✅ | ✅ | Low | |
-| pod | - | - | Low | Perl docs |
+| pod | ✅ | ✅ | Low | Perl docs |
 | ICML | - | - | High | Adobe InCopy |
 | Markua | - | - | Low | Leanpub format |
 | Djot | ✅ | ✅ | Low | Pandoc author's new format; via jotdown |
