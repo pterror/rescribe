@@ -311,6 +311,15 @@ pub mod muse {
     pub use rescribe_write_muse::emit_with_options;
 }
 
+/// txt2tags (t2t) format support.
+#[cfg(feature = "t2t")]
+pub mod t2t {
+    pub use rescribe_read_t2t::parse;
+    pub use rescribe_read_t2t::parse_with_options;
+    pub use rescribe_write_t2t::emit;
+    pub use rescribe_write_t2t::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

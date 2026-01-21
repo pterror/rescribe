@@ -87,7 +87,7 @@ Lower priority but good for completeness.
 | OPML | ✅ | ✅ | Low | Outline format; via quick-xml |
 | Haddock | ✅ | ✅ | Low | Haskell docs |
 | Muse | ✅ | ✅ | Low | Emacs Muse |
-| t2t (txt2tags) | - | - | Low | |
+| t2t (txt2tags) | ✅ | ✅ | Low | |
 | pod | - | - | Low | Perl docs |
 | ICML | - | - | High | Adobe InCopy |
 | Markua | - | - | Low | Leanpub format |

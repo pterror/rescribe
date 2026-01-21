@@ -45,9 +45,10 @@ creole = ["dep:rescribe-read-creole", "dep:rescribe-write-creole"]
 textile = ["dep:rescribe-read-textile", "dep:rescribe-write-textile"]
 haddock = ["dep:rescribe-read-haddock", "dep:rescribe-write-haddock"]
 muse = ["dep:rescribe-read-muse", "dep:rescribe-write-muse"]
+t2t = ["dep:rescribe-read-t2t", "dep:rescribe-write-t2t"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t"]
 
 [dependencies]
 # Core is always included
@@ -85,6 +86,7 @@ rescribe-read-creole = { workspace = true, optional = true }
 rescribe-read-textile = { workspace = true, optional = true }
 rescribe-read-haddock = { workspace = true, optional = true }
 rescribe-read-muse = { workspace = true, optional = true }
+rescribe-read-t2t = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -114,6 +116,7 @@ rescribe-write-creole = { workspace = true, optional = true }
 rescribe-write-textile = { workspace = true, optional = true }
 rescribe-write-haddock = { workspace = true, optional = true }
 rescribe-write-muse = { workspace = true, optional = true }
+rescribe-write-t2t = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

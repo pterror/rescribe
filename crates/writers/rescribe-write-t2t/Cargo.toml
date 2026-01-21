@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-t2t"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "txt2tags (t2t) writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
