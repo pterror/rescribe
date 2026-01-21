@@ -374,6 +374,15 @@ pub mod fb2 {
     pub use rescribe_write_fb2::emit_with_options;
 }
 
+/// Texinfo (GNU documentation) format support.
+#[cfg(feature = "texinfo")]
+pub mod texinfo {
+    pub use rescribe_read_texinfo::parse;
+    pub use rescribe_read_texinfo::parse_with_options;
+    pub use rescribe_write_texinfo::emit;
+    pub use rescribe_write_texinfo::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

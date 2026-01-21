@@ -93,6 +93,8 @@ rescribe-read-markua = { path = "crates/readers/rescribe-read-markua" }
 rescribe-write-markua = { path = "crates/writers/rescribe-write-markua" }
 rescribe-read-fb2 = { path = "crates/readers/rescribe-read-fb2" }
 rescribe-write-fb2 = { path = "crates/writers/rescribe-write-fb2" }
+rescribe-read-texinfo = { path = "crates/readers/rescribe-read-texinfo" }
+rescribe-write-texinfo = { path = "crates/writers/rescribe-write-texinfo" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

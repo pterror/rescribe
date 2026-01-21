@@ -44,7 +44,7 @@ Important for scholarly and technical writing.
 | CSL JSON | ✅ | ✅ | Low | Citation Style Language |
 | Jupyter (ipynb) | ✅ | ✅ | Low | JSON format; implemented |
 | man/mdoc | ✅ | ✅ | Medium | Unix manual pages |
-| Texinfo | - | - | Medium | GNU documentation |
+| Texinfo | ✅ | ✅ | Medium | GNU documentation |
 | ConTeXt | - | - | High | TeX variant |
 | Beamer | - | - | Medium | LaTeX slides; extend LaTeX writer |
 
