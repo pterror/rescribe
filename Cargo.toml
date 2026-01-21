@@ -58,6 +58,8 @@ rescribe-read-asciidoc = { path = "crates/readers/rescribe-read-asciidoc" }
 rescribe-write-rst = { path = "crates/writers/rescribe-write-rst" }
 rescribe-write-asciidoc = { path = "crates/writers/rescribe-write-asciidoc" }
 rescribe-write-bibtex = { path = "crates/writers/rescribe-write-bibtex" }
+rescribe-read-typst = { path = "crates/readers/rescribe-read-typst" }
+rescribe-write-typst = { path = "crates/writers/rescribe-write-typst" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

@@ -219,6 +219,15 @@ pub mod asciidoc {
     pub use rescribe_write_asciidoc::emit_with_options;
 }
 
+/// Typst format support.
+#[cfg(feature = "typst")]
+pub mod typst {
+    pub use rescribe_read_typst::parse;
+    pub use rescribe_read_typst::parse_with_options;
+    pub use rescribe_write_typst::emit;
+    pub use rescribe_write_typst::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
