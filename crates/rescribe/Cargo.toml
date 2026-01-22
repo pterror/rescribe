@@ -24,7 +24,7 @@ plaintext = ["dep:rescribe-write-plaintext"]
 pdf = ["dep:rescribe-read-pdf"]
 docx = ["dep:rescribe-read-docx", "dep:rescribe-write-docx"]
 ipynb = ["dep:rescribe-read-ipynb", "dep:rescribe-write-ipynb"]
-xlsx = ["dep:rescribe-read-xlsx"]
+xlsx = ["dep:rescribe-read-xlsx", "dep:rescribe-write-xlsx"]
 epub = ["dep:rescribe-read-epub", "dep:rescribe-write-epub"]
 djot = ["dep:rescribe-read-djot", "dep:rescribe-write-djot"]
 opml = ["dep:rescribe-read-opml", "dep:rescribe-write-opml"]
@@ -198,6 +198,7 @@ rescribe-write-pptx = { workspace = true, optional = true }
 rescribe-write-commonmark = { workspace = true, optional = true }
 rescribe-write-gfm = { workspace = true, optional = true }
 rescribe-write-ris = { workspace = true, optional = true }
+rescribe-write-xlsx = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

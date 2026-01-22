@@ -142,12 +142,14 @@ pub mod ipynb {
     pub use rescribe_write_ipynb::emit;
 }
 
-/// XLSX (Excel) format support (reader only).
+/// XLSX (Excel) format support.
 #[cfg(feature = "xlsx")]
 pub mod xlsx {
     pub use rescribe_read_xlsx::parse;
     pub use rescribe_read_xlsx::parse_bytes;
     pub use rescribe_read_xlsx::parse_file;
+    pub use rescribe_write_xlsx::emit;
+    pub use rescribe_write_xlsx::emit_with_options;
 }
 
 /// EPUB format support.
