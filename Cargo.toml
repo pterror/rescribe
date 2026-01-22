@@ -109,6 +109,11 @@ rescribe-read-bbcode = { path = "crates/readers/rescribe-read-bbcode" }
 rescribe-write-bbcode = { path = "crates/writers/rescribe-write-bbcode" }
 rescribe-read-ansi = { path = "crates/readers/rescribe-read-ansi" }
 rescribe-write-beamer = { path = "crates/writers/rescribe-write-beamer" }
+rescribe-read-csv = { path = "crates/readers/rescribe-read-csv" }
+rescribe-write-csv = { path = "crates/writers/rescribe-write-csv" }
+rescribe-write-context = { path = "crates/writers/rescribe-write-context" }
+rescribe-write-ms = { path = "crates/writers/rescribe-write-ms" }
+rescribe-write-chunkedhtml = { path = "crates/writers/rescribe-write-chunkedhtml" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

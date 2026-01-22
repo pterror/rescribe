@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-context"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "ConTeXt writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }

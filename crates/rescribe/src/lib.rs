@@ -461,6 +461,37 @@ pub mod beamer {
     pub use rescribe_write_beamer::emit_with_options;
 }
 
+/// CSV (Comma-Separated Values) format support.
+#[cfg(feature = "csv")]
+pub mod csv {
+    pub use rescribe_read_csv::parse;
+    pub use rescribe_read_csv::parse_with_options;
+    pub use rescribe_write_csv::emit;
+    pub use rescribe_write_csv::emit_with_options;
+}
+
+/// ConTeXt format support (writer only).
+#[cfg(feature = "context")]
+pub mod context {
+    pub use rescribe_write_context::emit;
+    pub use rescribe_write_context::emit_with_options;
+}
+
+/// Groff ms macro format support (writer only).
+#[cfg(feature = "ms")]
+pub mod ms {
+    pub use rescribe_write_ms::emit;
+    pub use rescribe_write_ms::emit_with_options;
+}
+
+/// Chunked HTML format support (writer only).
+#[cfg(feature = "chunkedhtml")]
+pub mod chunkedhtml {
+    pub use rescribe_write_chunkedhtml::HtmlChunk;
+    pub use rescribe_write_chunkedhtml::emit;
+    pub use rescribe_write_chunkedhtml::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
