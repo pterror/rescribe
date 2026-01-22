@@ -598,6 +598,15 @@ pub mod markdown_strict {
     pub use rescribe_write_markdown_strict::emit_with_options;
 }
 
+/// MultiMarkdown format support.
+#[cfg(feature = "multimarkdown")]
+pub mod multimarkdown {
+    pub use rescribe_read_multimarkdown::parse;
+    pub use rescribe_read_multimarkdown::parse_with_options;
+    pub use rescribe_write_multimarkdown::emit;
+    pub use rescribe_write_multimarkdown::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

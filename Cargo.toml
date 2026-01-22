@@ -137,6 +137,8 @@ rescribe-read-biblatex = { path = "crates/readers/rescribe-read-biblatex" }
 rescribe-write-biblatex = { path = "crates/writers/rescribe-write-biblatex" }
 rescribe-read-markdown-strict = { path = "crates/readers/rescribe-read-markdown-strict" }
 rescribe-write-markdown-strict = { path = "crates/writers/rescribe-write-markdown-strict" }
+rescribe-read-multimarkdown = { path = "crates/readers/rescribe-read-multimarkdown" }
+rescribe-write-multimarkdown = { path = "crates/writers/rescribe-write-multimarkdown" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
