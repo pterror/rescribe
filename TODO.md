@@ -1,44 +1,58 @@
-# Rescribe MVP Backlog
+# Rescribe Backlog
 
-## Priority 1: Usability
+## Completed
 
-- [x] **CLI tool** (`rescribe-cli` crate)
-  - `rescribe convert input.md -o output.html`
-  - `rescribe convert input.md --to latex` (stdout)
-  - Auto-detect input format, explicit output format
-  - `--list-formats` to show available readers/writers
+- [x] CLI tool (`rescribe-cli`)
+- [x] Metadata handling (YAML frontmatter, HTML meta tags)
+- [x] Resource embedding (images, data URIs)
+- [x] ParseOptions / EmitOptions implementation
+- [x] Transforms crate (ShiftHeadings, StripEmpty, MergeText, etc.)
+- [x] Pandoc JSON compatibility layer
+- [x] DOCX reader/writer (via ooxml crate)
+- [x] PDF reader (text extraction)
+- [x] 54 readers, 64 writers - comprehensive format coverage
 
-- [x] **Metadata handling**
-  - YAML frontmatter parsing in Markdown reader
-  - HTML `<meta>` tag extraction in HTML reader
-  - Populate `Document.metadata` field
-  - Emit metadata in writers where applicable
+## Priority 1: Quality Audit
 
-- [x] **Resource embedding**
-  - Wire up `ParseOptions::embed_resources`
-  - Populate `Document.resources` in readers
-  - Emit embedded resources (data URIs, inline) in writers
-  - At minimum: HTML→HTML roundtrip with images
+- [ ] **Review existing readers** - check for:
+  - Edge cases and malformed input handling
+  - Completeness of element support
+  - Proper fidelity warnings when losing information
+  - Test coverage
 
-## Priority 2: Options
+- [ ] **Review existing writers** - check for:
+  - Output validity (well-formed HTML/XML/etc.)
+  - Roundtrip accuracy (parse → emit → parse)
+  - Escaping and special character handling
+  - Missing node type handlers
 
-- [x] **Implement ParseOptions**
-  - [x] `embed_resources`: Actually embed images/resources
-  - [x] `preserve_source_info`: Track source spans and formatting style hints
+- [ ] **Core format deep-dive** (highest priority):
+  - Markdown (all variants)
+  - HTML
+  - LaTeX
+  - DOCX/ODT
+  - Org-mode
 
-- [x] **Implement EmitOptions**
-  - [x] `pretty`: Pretty-print output (HTML writer)
-  - [x] `use_source_info`: Use original formatting hints (heading style, markers, fences)
+## Priority 2: Infrastructure
 
-## Priority 3: Additional Readers
+- [ ] **Roundtrip tests** - automated format A → B → A comparison
+- [ ] **Pandoc fixture tests** - validate against Pandoc test suite
+- [ ] **Fuzz testing** - catch crashes on malformed input
+- [ ] **Documentation** - API docs, format support matrix
 
-- [x] **LaTeX reader** (basic support for sections, lists, verbatim, math)
-- [x] **Org-mode reader** (handwritten parser with headings, lists, emphasis, code blocks, metadata)
+## Someday/Maybe: Niche Formats
 
-## Future
+Low priority formats that could be added later if there's demand:
 
-- [x] Transforms crate (`rescribe-transforms`) - ShiftHeadings, StripEmpty, MergeText, UnwrapSingleChild, Pipeline
-- [x] Pandoc JSON compatibility layer (`rescribe-read-pandoc-json`, `rescribe-write-pandoc-json`)
-- [ ] DOCX reader/writer - **BLOCKED**: waiting on `ooxml` crate (see ~/git/ooxml)
-- [x] PDF reader (text extraction via pdf-extract, with fidelity warnings about structural loss)
-- [x] Comprehensive testing strategy documented (see TESTING.md)
+- [ ] Gemtext (Gemini protocol markup)
+- [ ] Mermaid (diagram markup)
+- [ ] PlantUML (UML diagrams)
+- [ ] GraphViz DOT (graph descriptions)
+- [ ] PHP Markdown Extra
+- [ ] Setext (original lightweight markup)
+- [ ] troff/nroff variants
+- [ ] DITA (technical documentation)
+- [ ] Confluence wiki markup
+- [ ] Notion export format
+- [ ] Roam Research export
+- [ ] Logseq export
