@@ -71,9 +71,11 @@ tsv = ["dep:rescribe-read-tsv", "dep:rescribe-write-tsv"]
 icml = ["dep:rescribe-write-icml"]
 slideous = ["dep:rescribe-write-slideous"]
 odt = ["dep:rescribe-write-odt"]
+native = ["dep:rescribe-read-native", "dep:rescribe-write-native"]
+pptx = ["dep:rescribe-write-pptx"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua", "fb2", "texinfo", "tikiwiki", "twiki", "xwiki", "revealjs", "slidy", "s5", "dzslides", "bbcode", "ansi-read", "beamer", "csv", "context", "ms", "chunkedhtml", "tsv", "icml", "slideous", "odt"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua", "fb2", "texinfo", "tikiwiki", "twiki", "xwiki", "revealjs", "slidy", "s5", "dzslides", "bbcode", "ansi-read", "beamer", "csv", "context", "ms", "chunkedhtml", "tsv", "icml", "slideous", "odt", "native", "pptx"]
 
 [dependencies]
 # Core is always included
@@ -126,6 +128,7 @@ rescribe-read-bbcode = { workspace = true, optional = true }
 rescribe-read-ansi = { workspace = true, optional = true }
 rescribe-read-csv = { workspace = true, optional = true }
 rescribe-read-tsv = { workspace = true, optional = true }
+rescribe-read-native = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -180,6 +183,8 @@ rescribe-write-tsv = { workspace = true, optional = true }
 rescribe-write-icml = { workspace = true, optional = true }
 rescribe-write-slideous = { workspace = true, optional = true }
 rescribe-write-odt = { workspace = true, optional = true }
+rescribe-write-native = { workspace = true, optional = true }
+rescribe-write-pptx = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

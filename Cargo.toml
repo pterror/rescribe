@@ -119,6 +119,9 @@ rescribe-write-tsv = { path = "crates/writers/rescribe-write-tsv" }
 rescribe-write-icml = { path = "crates/writers/rescribe-write-icml" }
 rescribe-write-slideous = { path = "crates/writers/rescribe-write-slideous" }
 rescribe-write-odt = { path = "crates/writers/rescribe-write-odt" }
+rescribe-read-native = { path = "crates/readers/rescribe-read-native" }
+rescribe-write-native = { path = "crates/writers/rescribe-write-native" }
+rescribe-write-pptx = { path = "crates/writers/rescribe-write-pptx" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

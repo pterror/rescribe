@@ -522,6 +522,22 @@ pub mod odt {
     pub use rescribe_write_odt::emit_with_options;
 }
 
+/// Native debug format support.
+#[cfg(feature = "native")]
+pub mod native {
+    pub use rescribe_read_native::parse;
+    pub use rescribe_read_native::parse_with_options;
+    pub use rescribe_write_native::emit;
+    pub use rescribe_write_native::emit_with_options;
+}
+
+/// PPTX (PowerPoint) format support (writer only).
+#[cfg(feature = "pptx")]
+pub mod pptx {
+    pub use rescribe_write_pptx::emit;
+    pub use rescribe_write_pptx::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
