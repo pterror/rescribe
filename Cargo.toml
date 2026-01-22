@@ -128,6 +128,9 @@ rescribe-read-commonmark = { path = "crates/readers/rescribe-read-commonmark" }
 rescribe-write-commonmark = { path = "crates/writers/rescribe-write-commonmark" }
 rescribe-read-gfm = { path = "crates/readers/rescribe-read-gfm" }
 rescribe-write-gfm = { path = "crates/writers/rescribe-write-gfm" }
+rescribe-read-ris = { path = "crates/readers/rescribe-read-ris" }
+rescribe-write-ris = { path = "crates/writers/rescribe-write-ris" }
+rescribe-read-endnotexml = { path = "crates/readers/rescribe-read-endnotexml" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

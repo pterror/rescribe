@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-read-ris"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "RIS (Research Information Systems) reader for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
