@@ -580,6 +580,15 @@ pub mod endnotexml {
     pub use rescribe_write_endnotexml::emit_with_options;
 }
 
+/// BibLaTeX bibliographic format support.
+#[cfg(feature = "biblatex")]
+pub mod biblatex {
+    pub use rescribe_read_biblatex::parse;
+    pub use rescribe_read_biblatex::parse_with_options;
+    pub use rescribe_write_biblatex::emit;
+    pub use rescribe_write_biblatex::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

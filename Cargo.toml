@@ -133,6 +133,8 @@ rescribe-write-ris = { path = "crates/writers/rescribe-write-ris" }
 rescribe-read-endnotexml = { path = "crates/readers/rescribe-read-endnotexml" }
 rescribe-write-endnotexml = { path = "crates/writers/rescribe-write-endnotexml" }
 rescribe-write-xlsx = { path = "crates/writers/rescribe-write-xlsx" }
+rescribe-read-biblatex = { path = "crates/readers/rescribe-read-biblatex" }
+rescribe-write-biblatex = { path = "crates/writers/rescribe-write-biblatex" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
