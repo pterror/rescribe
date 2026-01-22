@@ -515,9 +515,11 @@ pub mod slideous {
     pub use rescribe_write_slideous::emit_with_options;
 }
 
-/// ODT (OpenDocument Text) format support (writer only).
+/// ODT (OpenDocument Text) format support.
 #[cfg(feature = "odt")]
 pub mod odt {
+    pub use rescribe_read_odt::parse;
+    pub use rescribe_read_odt::parse_with_options;
     pub use rescribe_write_odt::emit;
     pub use rescribe_write_odt::emit_with_options;
 }
@@ -531,11 +533,31 @@ pub mod native {
     pub use rescribe_write_native::emit_with_options;
 }
 
-/// PPTX (PowerPoint) format support (writer only).
+/// PPTX (PowerPoint) format support.
 #[cfg(feature = "pptx")]
 pub mod pptx {
+    pub use rescribe_read_pptx::parse;
+    pub use rescribe_read_pptx::parse_with_options;
     pub use rescribe_write_pptx::emit;
     pub use rescribe_write_pptx::emit_with_options;
+}
+
+/// CommonMark format support.
+#[cfg(feature = "commonmark")]
+pub mod commonmark {
+    pub use rescribe_read_commonmark::parse;
+    pub use rescribe_read_commonmark::parse_with_options;
+    pub use rescribe_write_commonmark::emit;
+    pub use rescribe_write_commonmark::emit_with_options;
+}
+
+/// GitHub Flavored Markdown (GFM) format support.
+#[cfg(feature = "gfm")]
+pub mod gfm {
+    pub use rescribe_read_gfm::parse;
+    pub use rescribe_read_gfm::parse_with_options;
+    pub use rescribe_write_gfm::emit;
+    pub use rescribe_write_gfm::emit_with_options;
 }
 
 /// Common imports for typical usage.

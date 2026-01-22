@@ -122,6 +122,12 @@ rescribe-write-odt = { path = "crates/writers/rescribe-write-odt" }
 rescribe-read-native = { path = "crates/readers/rescribe-read-native" }
 rescribe-write-native = { path = "crates/writers/rescribe-write-native" }
 rescribe-write-pptx = { path = "crates/writers/rescribe-write-pptx" }
+rescribe-read-odt = { path = "crates/readers/rescribe-read-odt" }
+rescribe-read-pptx = { path = "crates/readers/rescribe-read-pptx" }
+rescribe-read-commonmark = { path = "crates/readers/rescribe-read-commonmark" }
+rescribe-write-commonmark = { path = "crates/writers/rescribe-write-commonmark" }
+rescribe-read-gfm = { path = "crates/readers/rescribe-read-gfm" }
+rescribe-write-gfm = { path = "crates/writers/rescribe-write-gfm" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }
