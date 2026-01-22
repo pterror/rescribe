@@ -383,6 +383,84 @@ pub mod texinfo {
     pub use rescribe_write_texinfo::emit_with_options;
 }
 
+/// TikiWiki format support.
+#[cfg(feature = "tikiwiki")]
+pub mod tikiwiki {
+    pub use rescribe_read_tikiwiki::parse;
+    pub use rescribe_read_tikiwiki::parse_with_options;
+    pub use rescribe_write_tikiwiki::emit;
+    pub use rescribe_write_tikiwiki::emit_with_options;
+}
+
+/// TWiki format support.
+#[cfg(feature = "twiki")]
+pub mod twiki {
+    pub use rescribe_read_twiki::parse;
+    pub use rescribe_read_twiki::parse_with_options;
+    pub use rescribe_write_twiki::emit;
+    pub use rescribe_write_twiki::emit_with_options;
+}
+
+/// XWiki format support.
+#[cfg(feature = "xwiki")]
+pub mod xwiki {
+    pub use rescribe_read_xwiki::parse;
+    pub use rescribe_read_xwiki::parse_with_options;
+    pub use rescribe_write_xwiki::emit;
+    pub use rescribe_write_xwiki::emit_with_options;
+}
+
+/// reveal.js HTML presentation format support (writer only).
+#[cfg(feature = "revealjs")]
+pub mod revealjs {
+    pub use rescribe_write_revealjs::emit;
+    pub use rescribe_write_revealjs::emit_with_options;
+}
+
+/// W3C Slidy HTML presentation format support (writer only).
+#[cfg(feature = "slidy")]
+pub mod slidy {
+    pub use rescribe_write_slidy::emit;
+    pub use rescribe_write_slidy::emit_with_options;
+}
+
+/// S5 HTML presentation format support (writer only).
+#[cfg(feature = "s5")]
+pub mod s5 {
+    pub use rescribe_write_s5::emit;
+    pub use rescribe_write_s5::emit_with_options;
+}
+
+/// DZSlides HTML presentation format support (writer only).
+#[cfg(feature = "dzslides")]
+pub mod dzslides {
+    pub use rescribe_write_dzslides::emit;
+    pub use rescribe_write_dzslides::emit_with_options;
+}
+
+/// BBCode forum markup format support.
+#[cfg(feature = "bbcode")]
+pub mod bbcode {
+    pub use rescribe_read_bbcode::parse;
+    pub use rescribe_read_bbcode::parse_with_options;
+    pub use rescribe_write_bbcode::emit;
+    pub use rescribe_write_bbcode::emit_with_options;
+}
+
+/// ANSI escape sequence format support (reader only).
+#[cfg(feature = "ansi-read")]
+pub mod ansi_read {
+    pub use rescribe_read_ansi::parse;
+    pub use rescribe_read_ansi::parse_with_options;
+}
+
+/// Beamer (LaTeX presentation) format support (writer only).
+#[cfg(feature = "beamer")]
+pub mod beamer {
+    pub use rescribe_write_beamer::emit;
+    pub use rescribe_write_beamer::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};

@@ -95,6 +95,20 @@ rescribe-read-fb2 = { path = "crates/readers/rescribe-read-fb2" }
 rescribe-write-fb2 = { path = "crates/writers/rescribe-write-fb2" }
 rescribe-read-texinfo = { path = "crates/readers/rescribe-read-texinfo" }
 rescribe-write-texinfo = { path = "crates/writers/rescribe-write-texinfo" }
+rescribe-read-tikiwiki = { path = "crates/readers/rescribe-read-tikiwiki" }
+rescribe-write-tikiwiki = { path = "crates/writers/rescribe-write-tikiwiki" }
+rescribe-read-twiki = { path = "crates/readers/rescribe-read-twiki" }
+rescribe-write-twiki = { path = "crates/writers/rescribe-write-twiki" }
+rescribe-read-xwiki = { path = "crates/readers/rescribe-read-xwiki" }
+rescribe-write-xwiki = { path = "crates/writers/rescribe-write-xwiki" }
+rescribe-write-revealjs = { path = "crates/writers/rescribe-write-revealjs" }
+rescribe-write-slidy = { path = "crates/writers/rescribe-write-slidy" }
+rescribe-write-s5 = { path = "crates/writers/rescribe-write-s5" }
+rescribe-write-dzslides = { path = "crates/writers/rescribe-write-dzslides" }
+rescribe-read-bbcode = { path = "crates/readers/rescribe-read-bbcode" }
+rescribe-write-bbcode = { path = "crates/writers/rescribe-write-bbcode" }
+rescribe-read-ansi = { path = "crates/readers/rescribe-read-ansi" }
+rescribe-write-beamer = { path = "crates/writers/rescribe-write-beamer" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

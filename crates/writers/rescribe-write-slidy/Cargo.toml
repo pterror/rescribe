@@ -1,0 +1,11 @@
+[package]
+name = "rescribe-write-slidy"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "W3C Slidy presentation writer for rescribe"
+
+[dependencies]
+rescribe-core = { workspace = true }
+rescribe-std = { workspace = true }
