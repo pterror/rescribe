@@ -571,11 +571,13 @@ pub mod ris {
     pub use rescribe_write_ris::emit_with_options;
 }
 
-/// EndNote XML bibliographic format support (reader only).
+/// EndNote XML bibliographic format support.
 #[cfg(feature = "endnotexml")]
 pub mod endnotexml {
     pub use rescribe_read_endnotexml::parse;
     pub use rescribe_read_endnotexml::parse_with_options;
+    pub use rescribe_write_endnotexml::emit;
+    pub use rescribe_write_endnotexml::emit_with_options;
 }
 
 /// Common imports for typical usage.
