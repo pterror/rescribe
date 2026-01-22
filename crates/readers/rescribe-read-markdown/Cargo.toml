@@ -8,7 +8,7 @@ description = "Markdown reader for rescribe"
 
 [features]
 default = ["tree-sitter"]
-pulldown = ["dep:pulldown-cmark"]
+pulldown = ["dep:pulldown-cmark", "dep:toml"]
 tree-sitter = ["dep:tree-sitter", "dep:tree-sitter-md"]
 
 [dependencies]
@@ -16,6 +16,7 @@ rescribe-core.workspace = true
 rescribe-std.workspace = true
 pulldown-cmark = { version = "0.12", optional = true }
 serde_yaml.workspace = true
+toml = { workspace = true, optional = true }
 tree-sitter = { version = "0.26", optional = true }
 tree-sitter-md = { version = "0.5", optional = true }
 

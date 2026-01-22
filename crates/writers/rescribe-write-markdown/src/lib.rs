@@ -311,6 +311,13 @@ fn emit_table(node: &Node, ctx: &mut EmitContext) {
     let mut rows: Vec<Vec<String>> = Vec::new();
     let mut col_widths: Vec<usize> = Vec::new();
 
+    // Get column alignments if present
+    let alignments: Vec<&str> = node
+        .props
+        .get_str("column_alignments")
+        .map(|s| s.split(',').collect())
+        .unwrap_or_default();
+
     // First pass: collect all cell contents and calculate widths
     for child in &node.children {
         match child.kind.as_str() {
@@ -339,19 +346,37 @@ fn emit_table(node: &Node, ctx: &mut EmitContext) {
 
     // Emit header row (first row)
     if let Some(header) = rows.first() {
-        emit_table_row(header, &col_widths, ctx);
+        emit_table_row(header, &col_widths, &alignments, ctx);
 
-        // Emit separator
+        // Emit separator with alignment markers
         ctx.write("|");
-        for width in &col_widths {
-            ctx.write(&"-".repeat(*width + 2));
-            ctx.write("|");
+        for (i, width) in col_widths.iter().enumerate() {
+            let align = alignments.get(i).copied().unwrap_or("none");
+            let dashes = width.saturating_sub(match align {
+                "left" | "right" => 1,
+                "center" => 2,
+                _ => 0,
+            });
+            match align {
+                "left" => {
+                    ctx.write(&format!(" :{} |", "-".repeat(dashes.max(1) + 1)));
+                }
+                "right" => {
+                    ctx.write(&format!(" {}: |", "-".repeat(dashes.max(1) + 1)));
+                }
+                "center" => {
+                    ctx.write(&format!(" :{}: |", "-".repeat(dashes.max(1))));
+                }
+                _ => {
+                    ctx.write(&format!(" {} |", "-".repeat(*width)));
+                }
+            }
         }
         ctx.newline();
 
         // Emit remaining rows
         for row in rows.iter().skip(1) {
-            emit_table_row(row, &col_widths, ctx);
+            emit_table_row(row, &col_widths, &alignments, ctx);
         }
     }
 }
@@ -378,11 +403,16 @@ fn update_col_widths(cells: &[String], widths: &mut Vec<usize>) {
     }
 }
 
-fn emit_table_row(cells: &[String], widths: &[usize], ctx: &mut EmitContext) {
+fn emit_table_row(cells: &[String], widths: &[usize], alignments: &[&str], ctx: &mut EmitContext) {
     ctx.write("|");
     for (i, cell) in cells.iter().enumerate() {
         let width = widths.get(i).copied().unwrap_or(3);
-        ctx.write(&format!(" {:width$} |", cell, width = width));
+        let align = alignments.get(i).copied().unwrap_or("none");
+        match align {
+            "right" => ctx.write(&format!(" {:>width$} |", cell, width = width)),
+            "center" => ctx.write(&format!(" {:^width$} |", cell, width = width)),
+            _ => ctx.write(&format!(" {:width$} |", cell, width = width)),
+        }
     }
     ctx.newline();
 }
@@ -414,20 +444,46 @@ fn emit_text(node: &Node, ctx: &mut EmitContext) {
 fn escape_markdown(text: &str) -> String {
     let mut result = String::with_capacity(text.len());
     let chars: Vec<char> = text.chars().collect();
+    let at_line_start = |i: usize| i == 0 || chars.get(i.wrapping_sub(1)) == Some(&'\n');
+
     for (i, &c) in chars.iter().enumerate() {
         match c {
-            '\\' | '`' | '*' | '_' | '{' | '}' | '[' | ']' | '<' | '>' => {
+            // Always escape these markdown special characters
+            '\\' | '`' | '*' | '_' | '{' | '}' | '[' | ']' | '<' | '>' | '|' => {
                 result.push('\\');
                 result.push(c);
             }
-            // Only escape ! if followed by [ (image syntax)
+            // Escape ~ only if followed by another ~ (strikethrough)
+            '~' if chars.get(i + 1) == Some(&'~') => {
+                result.push('\\');
+                result.push(c);
+            }
+            // Escape ! if followed by [ (image syntax)
             '!' if chars.get(i + 1) == Some(&'[') => {
                 result.push('\\');
                 result.push(c);
             }
-            // Only escape # at start of line
-            '#' if i == 0 || chars.get(i.wrapping_sub(1)) == Some(&'\n') => {
+            // Escape # at start of line (heading)
+            '#' if at_line_start(i) => {
                 result.push('\\');
+                result.push(c);
+            }
+            // Escape - + at start of line (unordered list)
+            '-' | '+' if at_line_start(i) && chars.get(i + 1) == Some(&' ') => {
+                result.push('\\');
+                result.push(c);
+            }
+            // Escape digits followed by . or ) at start of line (ordered list)
+            '0'..='9' if at_line_start(i) => {
+                // Check if this is the start of an ordered list: number followed by . or )
+                let mut j = i + 1;
+                while j < chars.len() && chars[j].is_ascii_digit() {
+                    j += 1;
+                }
+                if j < chars.len() && (chars[j] == '.' || chars[j] == ')') {
+                    // This could be interpreted as an ordered list, escape first digit
+                    result.push('\\');
+                }
                 result.push(c);
             }
             _ => result.push(c),
@@ -554,8 +610,34 @@ fn emit_footnote_def(node: &Node, ctx: &mut EmitContext) {
 }
 
 fn emit_definition_list(node: &Node, ctx: &mut EmitContext) {
+    ctx.blank_line();
     for child in &node.children {
-        emit_node(child, ctx);
+        match child.kind.as_str() {
+            node::DEFINITION_TERM => {
+                emit_nodes(&child.children, ctx);
+                ctx.newline();
+            }
+            node::DEFINITION_DESC => {
+                ctx.write(":   ");
+                // Emit content, indenting continuation lines
+                let mut inner_ctx = EmitContext::new(ctx.use_source_info);
+                emit_nodes(&child.children, &mut inner_ctx);
+                let content = inner_ctx.output.trim_end();
+                let mut first_line = true;
+                for line in content.lines() {
+                    if first_line {
+                        ctx.write(line);
+                        first_line = false;
+                    } else {
+                        ctx.newline();
+                        ctx.write("    ");
+                        ctx.write(line);
+                    }
+                }
+                ctx.newline();
+            }
+            _ => emit_node(child, ctx),
+        }
     }
 }
 
@@ -764,5 +846,71 @@ mod roundtrip_tests {
         let output = roundtrip(input);
         assert!(output.contains("[ ] unchecked"));
         assert!(output.contains("[x] checked"));
+    }
+
+    #[test]
+    fn test_roundtrip_table_alignment() {
+        let input =
+            "| Left | Center | Right |\n|:-----|:------:|------:|\n| a    | b      | c     |\n";
+        let output = roundtrip(input);
+        // Just check table structure is preserved
+        assert!(output.contains("| Left"));
+        assert!(output.contains("| a"));
+        // Note: alignment markers are preserved via column_alignments property
+        // but exact formatting may vary
+    }
+}
+
+#[cfg(test)]
+mod escape_tests {
+    use super::escape_markdown;
+
+    #[test]
+    fn test_escape_basic_chars() {
+        assert_eq!(escape_markdown("*bold*"), "\\*bold\\*");
+        assert_eq!(escape_markdown("`code`"), "\\`code\\`");
+        assert_eq!(escape_markdown("[link]"), "\\[link\\]");
+        assert_eq!(escape_markdown("<html>"), "\\<html\\>");
+    }
+
+    #[test]
+    fn test_escape_pipe() {
+        assert_eq!(escape_markdown("a | b"), "a \\| b");
+    }
+
+    #[test]
+    fn test_escape_strikethrough() {
+        // Only the first ~ of a pair is escaped, which breaks the syntax
+        assert_eq!(escape_markdown("~~strike~~"), "\\~~strike\\~~");
+        assert_eq!(escape_markdown("~not strike~"), "~not strike~");
+    }
+
+    #[test]
+    fn test_escape_image_syntax() {
+        assert_eq!(escape_markdown("![alt]"), "\\!\\[alt\\]");
+        assert_eq!(escape_markdown("! not image"), "! not image");
+    }
+
+    #[test]
+    fn test_escape_heading_at_line_start() {
+        assert_eq!(escape_markdown("# heading"), "\\# heading");
+        // # in middle of line is not escaped
+        assert_eq!(escape_markdown("not # heading"), "not # heading");
+    }
+
+    #[test]
+    fn test_escape_list_at_line_start() {
+        assert_eq!(escape_markdown("- item"), "\\- item");
+        assert_eq!(escape_markdown("+ item"), "\\+ item");
+        // Without space, not a list
+        assert_eq!(escape_markdown("-item"), "-item");
+    }
+
+    #[test]
+    fn test_escape_ordered_list() {
+        assert_eq!(escape_markdown("1. item"), "\\1. item");
+        assert_eq!(escape_markdown("10. item"), "\\10. item");
+        // Not at line start
+        assert_eq!(escape_markdown("see 1. item"), "see 1. item");
     }
 }

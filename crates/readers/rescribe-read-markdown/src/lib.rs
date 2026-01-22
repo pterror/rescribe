@@ -160,11 +160,38 @@ Content here."#;
         assert_eq!(doc.metadata.get_str("author"), Some("John Doe"));
         assert_eq!(doc.metadata.get_str("date"), Some("2024-01-15"));
         assert_eq!(doc.metadata.get_bool("draft"), Some(true));
-        assert_eq!(doc.metadata.get_str("tags"), Some("rust, markdown"));
+        // Tags should be a list now
+        let tags = doc.metadata.get("tags");
+        assert!(tags.is_some());
+        if let Some(rescribe_core::PropValue::List(items)) = tags {
+            assert_eq!(items.len(), 2);
+        }
 
         let children = root_children(&doc);
         assert!(!children.is_empty());
         assert_eq!(children[0].kind.as_str(), node::HEADING);
+    }
+
+    #[test]
+    #[cfg(feature = "pulldown")]
+    fn test_parse_nested_yaml_frontmatter() {
+        let input = r#"---
+title: My Document
+author:
+  name: John Doe
+  email: john@example.com
+---
+
+# Hello"#;
+        let result = parse(input).unwrap();
+        let doc = result.value;
+
+        assert_eq!(doc.metadata.get_str("title"), Some("My Document"));
+        assert_eq!(doc.metadata.get_str("author.name"), Some("John Doe"));
+        assert_eq!(
+            doc.metadata.get_str("author.email"),
+            Some("john@example.com")
+        );
     }
 
     #[test]

@@ -393,7 +393,7 @@ fn parse_tag(
         }
 
         Tag::MetadataBlock(kind) => {
-            // Extract YAML content from children (text nodes)
+            // Extract content from children (text nodes)
             let content = children
                 .iter()
                 .filter_map(|n| {
@@ -411,12 +411,7 @@ fn parse_tag(
                     parse_yaml_metadata(&content, metadata, warnings);
                 }
                 MetadataBlockKind::PlusesStyle => {
-                    // TOML-style frontmatter, not yet supported
-                    warnings.push(FidelityWarning::new(
-                        Severity::Minor,
-                        WarningKind::UnsupportedNode("toml_frontmatter".to_string()),
-                        "TOML frontmatter is not yet supported",
-                    ));
+                    parse_toml_metadata(&content, metadata, warnings);
                 }
             }
             None
@@ -504,47 +499,11 @@ fn parse_yaml_metadata(
     metadata: &mut Properties,
     warnings: &mut Vec<FidelityWarning>,
 ) {
-    // Parse YAML as a mapping
     let yaml: Result<serde_yaml::Value, _> = serde_yaml::from_str(content);
 
     match yaml {
         Ok(serde_yaml::Value::Mapping(map)) => {
-            for (key, value) in map {
-                if let serde_yaml::Value::String(key_str) = key {
-                    match value {
-                        serde_yaml::Value::String(s) => {
-                            metadata.set(&key_str, s);
-                        }
-                        serde_yaml::Value::Number(n) => {
-                            if let Some(i) = n.as_i64() {
-                                metadata.set(&key_str, i);
-                            } else if let Some(f) = n.as_f64() {
-                                // Store floats as strings for now
-                                metadata.set(&key_str, f.to_string());
-                            }
-                        }
-                        serde_yaml::Value::Bool(b) => {
-                            metadata.set(&key_str, b);
-                        }
-                        serde_yaml::Value::Sequence(seq) => {
-                            // Store arrays as comma-separated strings
-                            let items: Vec<String> = seq
-                                .into_iter()
-                                .filter_map(|v| match v {
-                                    serde_yaml::Value::String(s) => Some(s),
-                                    _ => None,
-                                })
-                                .collect();
-                            if !items.is_empty() {
-                                metadata.set(&key_str, items.join(", "));
-                            }
-                        }
-                        _ => {
-                            // Nested objects not supported yet
-                        }
-                    }
-                }
-            }
+            flatten_yaml_value("", &serde_yaml::Value::Mapping(map), metadata);
         }
         Ok(_) => {
             warnings.push(FidelityWarning::new(
@@ -560,5 +519,174 @@ fn parse_yaml_metadata(
                 format!("Failed to parse YAML frontmatter: {}", e),
             ));
         }
+    }
+}
+
+/// Recursively flatten YAML values into metadata with dot-notation keys.
+fn flatten_yaml_value(prefix: &str, value: &serde_yaml::Value, metadata: &mut Properties) {
+    match value {
+        serde_yaml::Value::Mapping(map) => {
+            for (k, v) in map {
+                if let serde_yaml::Value::String(key_str) = k {
+                    let full_key = if prefix.is_empty() {
+                        key_str.clone()
+                    } else {
+                        format!("{}.{}", prefix, key_str)
+                    };
+                    flatten_yaml_value(&full_key, v, metadata);
+                }
+            }
+        }
+        serde_yaml::Value::String(s) => {
+            metadata.set(prefix, s.clone());
+        }
+        serde_yaml::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                metadata.set(prefix, i);
+            } else if let Some(f) = n.as_f64() {
+                metadata.set(prefix, f);
+            }
+        }
+        serde_yaml::Value::Bool(b) => {
+            metadata.set(prefix, *b);
+        }
+        serde_yaml::Value::Sequence(seq) => {
+            // Store arrays as PropValue::List
+            let items: Vec<rescribe_core::PropValue> =
+                seq.iter().filter_map(yaml_to_prop_value).collect();
+            if !items.is_empty() {
+                metadata.set(prefix, rescribe_core::PropValue::List(items));
+            }
+        }
+        serde_yaml::Value::Null => {}
+        serde_yaml::Value::Tagged(tagged) => {
+            // Ignore the tag and process the inner value
+            flatten_yaml_value(prefix, &tagged.value, metadata);
+        }
+    }
+}
+
+/// Convert a YAML value to a PropValue.
+fn yaml_to_prop_value(value: &serde_yaml::Value) -> Option<rescribe_core::PropValue> {
+    match value {
+        serde_yaml::Value::String(s) => Some(rescribe_core::PropValue::String(s.clone())),
+        serde_yaml::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                Some(rescribe_core::PropValue::Int(i))
+            } else {
+                n.as_f64().map(rescribe_core::PropValue::Float)
+            }
+        }
+        serde_yaml::Value::Bool(b) => Some(rescribe_core::PropValue::Bool(*b)),
+        serde_yaml::Value::Sequence(seq) => {
+            let items: Vec<rescribe_core::PropValue> =
+                seq.iter().filter_map(yaml_to_prop_value).collect();
+            Some(rescribe_core::PropValue::List(items))
+        }
+        serde_yaml::Value::Mapping(map) => {
+            let items: std::collections::HashMap<String, rescribe_core::PropValue> = map
+                .iter()
+                .filter_map(|(k, v)| {
+                    if let serde_yaml::Value::String(key) = k {
+                        yaml_to_prop_value(v).map(|pv| (key.clone(), pv))
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            Some(rescribe_core::PropValue::Map(items))
+        }
+        serde_yaml::Value::Null => None,
+        serde_yaml::Value::Tagged(tagged) => yaml_to_prop_value(&tagged.value),
+    }
+}
+
+/// Parse TOML frontmatter and populate document metadata.
+fn parse_toml_metadata(
+    content: &str,
+    metadata: &mut Properties,
+    warnings: &mut Vec<FidelityWarning>,
+) {
+    let toml_result: Result<toml::Value, _> = content.parse();
+
+    match toml_result {
+        Ok(toml::Value::Table(table)) => {
+            flatten_toml_value("", &toml::Value::Table(table), metadata);
+        }
+        Ok(_) => {
+            warnings.push(FidelityWarning::new(
+                Severity::Minor,
+                WarningKind::FeatureLost("toml_frontmatter".to_string()),
+                "TOML frontmatter must be a table/object",
+            ));
+        }
+        Err(e) => {
+            warnings.push(FidelityWarning::new(
+                Severity::Minor,
+                WarningKind::FeatureLost("toml_frontmatter".to_string()),
+                format!("Failed to parse TOML frontmatter: {}", e),
+            ));
+        }
+    }
+}
+
+/// Recursively flatten TOML values into metadata with dot-notation keys.
+fn flatten_toml_value(prefix: &str, value: &toml::Value, metadata: &mut Properties) {
+    match value {
+        toml::Value::Table(table) => {
+            for (key, v) in table {
+                let full_key = if prefix.is_empty() {
+                    key.clone()
+                } else {
+                    format!("{}.{}", prefix, key)
+                };
+                flatten_toml_value(&full_key, v, metadata);
+            }
+        }
+        toml::Value::String(s) => {
+            metadata.set(prefix, s.clone());
+        }
+        toml::Value::Integer(i) => {
+            metadata.set(prefix, *i);
+        }
+        toml::Value::Float(f) => {
+            metadata.set(prefix, *f);
+        }
+        toml::Value::Boolean(b) => {
+            metadata.set(prefix, *b);
+        }
+        toml::Value::Array(arr) => {
+            let items: Vec<rescribe_core::PropValue> =
+                arr.iter().filter_map(toml_to_prop_value).collect();
+            if !items.is_empty() {
+                metadata.set(prefix, rescribe_core::PropValue::List(items));
+            }
+        }
+        toml::Value::Datetime(dt) => {
+            metadata.set(prefix, dt.to_string());
+        }
+    }
+}
+
+/// Convert a TOML value to a PropValue.
+fn toml_to_prop_value(value: &toml::Value) -> Option<rescribe_core::PropValue> {
+    match value {
+        toml::Value::String(s) => Some(rescribe_core::PropValue::String(s.clone())),
+        toml::Value::Integer(i) => Some(rescribe_core::PropValue::Int(*i)),
+        toml::Value::Float(f) => Some(rescribe_core::PropValue::Float(*f)),
+        toml::Value::Boolean(b) => Some(rescribe_core::PropValue::Bool(*b)),
+        toml::Value::Array(arr) => {
+            let items: Vec<rescribe_core::PropValue> =
+                arr.iter().filter_map(toml_to_prop_value).collect();
+            Some(rescribe_core::PropValue::List(items))
+        }
+        toml::Value::Table(table) => {
+            let items: std::collections::HashMap<String, rescribe_core::PropValue> = table
+                .iter()
+                .filter_map(|(k, v)| toml_to_prop_value(v).map(|pv| (k.clone(), pv)))
+                .collect();
+            Some(rescribe_core::PropValue::Map(items))
+        }
+        toml::Value::Datetime(dt) => Some(rescribe_core::PropValue::String(dt.to_string())),
     }
 }
