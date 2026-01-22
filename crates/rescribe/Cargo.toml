@@ -78,9 +78,10 @@ gfm = ["dep:rescribe-read-gfm", "dep:rescribe-write-gfm"]
 ris = ["dep:rescribe-read-ris", "dep:rescribe-write-ris"]
 endnotexml = ["dep:rescribe-read-endnotexml", "dep:rescribe-write-endnotexml"]
 biblatex = ["dep:rescribe-read-biblatex", "dep:rescribe-write-biblatex"]
+markdown-strict = ["dep:rescribe-read-markdown-strict", "dep:rescribe-write-markdown-strict"]
 
 # All formats
-all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua", "fb2", "texinfo", "tikiwiki", "twiki", "xwiki", "revealjs", "slidy", "s5", "dzslides", "bbcode", "ansi-read", "beamer", "csv", "context", "ms", "chunkedhtml", "tsv", "icml", "slideous", "odt", "native", "pptx", "commonmark", "gfm", "ris", "endnotexml", "biblatex"]
+all = ["std", "math", "markdown", "html", "latex", "org", "plaintext", "pdf", "docx", "ipynb", "xlsx", "epub", "djot", "opml", "mediawiki", "bibtex", "csl-json", "docbook", "rst", "asciidoc", "typst", "ansi", "dokuwiki", "jats", "tei", "man", "jira", "creole", "textile", "haddock", "muse", "t2t", "rtf", "vimwiki", "zimwiki", "pod", "markua", "fb2", "texinfo", "tikiwiki", "twiki", "xwiki", "revealjs", "slidy", "s5", "dzslides", "bbcode", "ansi-read", "beamer", "csv", "context", "ms", "chunkedhtml", "tsv", "icml", "slideous", "odt", "native", "pptx", "commonmark", "gfm", "ris", "endnotexml", "biblatex", "markdown-strict"]
 
 [dependencies]
 # Core is always included
@@ -141,6 +142,7 @@ rescribe-read-gfm = { workspace = true, optional = true }
 rescribe-read-ris = { workspace = true, optional = true }
 rescribe-read-endnotexml = { workspace = true, optional = true }
 rescribe-read-biblatex = { workspace = true, optional = true }
+rescribe-read-markdown-strict = { workspace = true, optional = true }
 
 # Writers (optional)
 rescribe-write-markdown = { workspace = true, optional = true }
@@ -203,6 +205,7 @@ rescribe-write-ris = { workspace = true, optional = true }
 rescribe-write-xlsx = { workspace = true, optional = true }
 rescribe-write-endnotexml = { workspace = true, optional = true }
 rescribe-write-biblatex = { workspace = true, optional = true }
+rescribe-write-markdown-strict = { workspace = true, optional = true }
 
 [dev-dependencies]
 rescribe-read-markdown = { workspace = true }

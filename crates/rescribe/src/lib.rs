@@ -589,6 +589,15 @@ pub mod biblatex {
     pub use rescribe_write_biblatex::emit_with_options;
 }
 
+/// Markdown strict (original Markdown.pl) format support.
+#[cfg(feature = "markdown-strict")]
+pub mod markdown_strict {
+    pub use rescribe_read_markdown_strict::parse;
+    pub use rescribe_read_markdown_strict::parse_with_options;
+    pub use rescribe_write_markdown_strict::emit;
+    pub use rescribe_write_markdown_strict::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
