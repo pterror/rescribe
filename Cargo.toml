@@ -139,6 +139,8 @@ rescribe-read-markdown-strict = { path = "crates/readers/rescribe-read-markdown-
 rescribe-write-markdown-strict = { path = "crates/writers/rescribe-write-markdown-strict" }
 rescribe-read-multimarkdown = { path = "crates/readers/rescribe-read-multimarkdown" }
 rescribe-write-multimarkdown = { path = "crates/writers/rescribe-write-multimarkdown" }
+rescribe-read-fountain = { path = "crates/readers/rescribe-read-fountain" }
+rescribe-write-fountain = { path = "crates/writers/rescribe-write-fountain" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

@@ -607,6 +607,15 @@ pub mod multimarkdown {
     pub use rescribe_write_multimarkdown::emit_with_options;
 }
 
+/// Fountain screenplay format support.
+#[cfg(feature = "fountain")]
+pub mod fountain {
+    pub use rescribe_read_fountain::parse;
+    pub use rescribe_read_fountain::parse_with_options;
+    pub use rescribe_write_fountain::emit;
+    pub use rescribe_write_fountain::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
