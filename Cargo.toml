@@ -114,6 +114,11 @@ rescribe-write-csv = { path = "crates/writers/rescribe-write-csv" }
 rescribe-write-context = { path = "crates/writers/rescribe-write-context" }
 rescribe-write-ms = { path = "crates/writers/rescribe-write-ms" }
 rescribe-write-chunkedhtml = { path = "crates/writers/rescribe-write-chunkedhtml" }
+rescribe-read-tsv = { path = "crates/readers/rescribe-read-tsv" }
+rescribe-write-tsv = { path = "crates/writers/rescribe-write-tsv" }
+rescribe-write-icml = { path = "crates/writers/rescribe-write-icml" }
+rescribe-write-slideous = { path = "crates/writers/rescribe-write-slideous" }
+rescribe-write-odt = { path = "crates/writers/rescribe-write-odt" }
 
 # CLI crate
 rescribe = { path = "crates/rescribe" }

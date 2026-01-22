@@ -1,0 +1,8 @@
+[package]
+name = "rescribe-write-slideous"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rescribe-core = { path = "../../rescribe-core" }
+rescribe-std = { path = "../../nodes/rescribe-std" }

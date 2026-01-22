@@ -492,6 +492,36 @@ pub mod chunkedhtml {
     pub use rescribe_write_chunkedhtml::emit_with_options;
 }
 
+/// TSV (Tab-Separated Values) format support.
+#[cfg(feature = "tsv")]
+pub mod tsv {
+    pub use rescribe_read_tsv::parse;
+    pub use rescribe_read_tsv::parse_with_options;
+    pub use rescribe_write_tsv::emit;
+    pub use rescribe_write_tsv::emit_with_options;
+}
+
+/// ICML (InCopy Markup Language) format support (writer only).
+#[cfg(feature = "icml")]
+pub mod icml {
+    pub use rescribe_write_icml::emit;
+    pub use rescribe_write_icml::emit_with_options;
+}
+
+/// Slideous HTML slideshow format support (writer only).
+#[cfg(feature = "slideous")]
+pub mod slideous {
+    pub use rescribe_write_slideous::emit;
+    pub use rescribe_write_slideous::emit_with_options;
+}
+
+/// ODT (OpenDocument Text) format support (writer only).
+#[cfg(feature = "odt")]
+pub mod odt {
+    pub use rescribe_write_odt::emit;
+    pub use rescribe_write_odt::emit_with_options;
+}
+
 /// Common imports for typical usage.
 pub mod prelude {
     pub use crate::{ConversionResult, Document, Node, PropValue, Properties};
