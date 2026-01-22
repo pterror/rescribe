@@ -29,8 +29,8 @@ Each format is evaluated on:
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Reader | `[~]` | Good coverage. Issues: TOML frontmatter not parsed, nested YAML objects ignored, arrays flattened to comma-separated |
-| Writer | `[~]` | Excellent source info preservation. Issues: definition list syntax incorrect, escape_markdown incomplete, table alignment not preserved |
+| Reader | `[x]` | Good coverage. TOML frontmatter, nested YAML (dot notation), arrays as PropValue::List. Tree-sitter preserves source info for roundtripping. |
+| Writer | `[x]` | Excellent source info preservation. Definition list syntax, comprehensive escaping, table alignment support. |
 
 ### HTML
 
@@ -535,3 +535,5 @@ Each format is evaluated on:
 |------|--------|----------|----------|
 | 2026-01-23 | Markdown Reader | Claude | TOML frontmatter not parsed, nested YAML ignored, arrays flattened |
 | 2026-01-23 | Markdown Writer | Claude | Definition list syntax wrong, escape incomplete, table alignment lost |
+| 2026-01-23 | Markdown Reader | Claude | FIXED: Added TOML frontmatter, nested YAML with dot notation, arrays as PropValue::List |
+| 2026-01-23 | Markdown Writer | Claude | FIXED: Definition list syntax, comprehensive escaping, table alignment |
