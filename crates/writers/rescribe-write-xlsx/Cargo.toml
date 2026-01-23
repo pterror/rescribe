@@ -1,9 +1,12 @@
 [package]
 name = "rescribe-write-xlsx"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "XLSX (Excel) writer for rescribe"
 
 [dependencies]
-rescribe-core = { path = "../../rescribe-core" }
-rescribe-std = { path = "../../nodes/rescribe-std" }
-ooxml-sml = { path = "../../../../ooxml/crates/ooxml-sml" }
+rescribe-core.workspace = true
+rescribe-std.workspace = true
+ooxml-sml.workspace = true
