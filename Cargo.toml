@@ -15,7 +15,7 @@ members = [
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/pterror/rescribe"
+repository = "https://github.com/rhi-zone/rescribe"
 
 [workspace.dependencies]
 # Internal crates
@@ -146,8 +146,8 @@ rescribe-write-fountain = { path = "crates/writers/rescribe-write-fountain" }
 rescribe = { path = "crates/rescribe" }
 
 # External dependencies
-ooxml-wml = { git = "https://github.com/pterror/ooxml", package = "ooxml-wml" }
-ooxml-sml = { git = "https://github.com/pterror/ooxml", package = "ooxml-sml" }
+ooxml-wml = { git = "https://github.com/pterror/ooxml", rev = "3aa50763ff9ff13b3e6038806be5c10056e6d3a1", package = "ooxml-wml" }
+ooxml-sml = { git = "https://github.com/pterror/ooxml", rev = "3aa50763ff9ff13b3e6038806be5c10056e6d3a1", package = "ooxml-sml" }
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }

@@ -11,6 +11,8 @@ rescribe is a universal document conversion library, inspired by Pandoc but with
 - Embedded resource handling
 - Roundtrip-friendly design
 
+Part of the [rhi ecosystem](https://rhi.zone).
+
 ## Architecture
 
 ```
@@ -75,7 +77,7 @@ Pandoc fixtures at `~/git/pandoc/test/` can be used as local reference inputs (G
 
 ## Conventions
 
-- Crate names: `rescribe-{name}` (no org prefix)
+- Crate names: `rescribe-{name}` (no rhi prefix per ecosystem convention)
 - Reader/writer crates: `rescribe-read-{format}`, `rescribe-write-{format}`
 - Node kinds: lowercase with underscores (`code_block`)
 - Format-specific kinds: `{format}:{name}` (`html:div`)

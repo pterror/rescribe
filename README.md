@@ -58,6 +58,10 @@ cargo test
 cd docs && bun dev
 ```
 
+## Part of rhi ecosystem
+
+rescribe is part of the [rhi ecosystem](https://rhi.zone) - a collection of tools for data transformation and content processing.
+
 ## License
 
 MIT OR Apache-2.0

@@ -11,7 +11,7 @@ hero:
       link: /introduction
     - theme: alt
       text: View on GitHub
-      link: https://github.com/pterror/rescribe
+      link: https://github.com/rhi-zone/rescribe
 
 features:
   - title: Extensible IR

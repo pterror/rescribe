@@ -13,6 +13,7 @@ export default withMermaid(
         { text: 'Guide', link: '/introduction' },
         { text: 'API', link: '/api' },
         { text: 'Formats', link: '/formats' },
+        { text: 'rhi', link: 'https://rhi.zone/' },
       ],
 
       sidebar: [
@@ -43,7 +44,7 @@ export default withMermaid(
       ],
 
       socialLinks: [
-        { icon: 'github', link: 'https://github.com/pterror/rescribe' }
+        { icon: 'github', link: 'https://github.com/rhi-zone/rescribe' }
       ],
 
       search: {
@@ -51,7 +52,7 @@ export default withMermaid(
       },
 
       editLink: {
-        pattern: 'https://github.com/pterror/rescribe/edit/master/docs/:path',
+        pattern: 'https://github.com/rhi-zone/rescribe/edit/master/docs/:path',
         text: 'Edit this page on GitHub'
       },
     },
