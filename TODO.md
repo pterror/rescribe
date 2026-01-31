@@ -1,5 +1,10 @@
 # Rescribe Backlog
 
+## Blocked
+
+- [ ] Pre-commit hook blocks all commits — `ooxml-wml` git dependency (rev `3aa50763`) has broken import (`types::ns` no longer exists). Clippy fails on it. Need to update the ooxml pin or patch the dep.
+- [ ] CLAUDE.md and hook changes staged but uncommitted (auto-format hook + workflow guidance) — commit once clippy passes
+
 ## Completed
 
 - [x] CLI tool (`rescribe-cli`)
